@@ -40,7 +40,7 @@
 {% if products %}
 <div class="row">
     {% for p in products %}
-    <div class="col-md-3 col-12 p-2">
+    <div class="col-md-3 col-12 p-4">
         <div class="card">
             <img class="card-img-top" src="{{ p.image }}" alt="{{ p.name }}">
             <div class="card-body" >
@@ -57,7 +57,7 @@
     {% if pages > 1 %}
     <ul class="pagination mt-1">
         {% for i in range(1, pages + 1) %}
-        <li class="page-item"><a class="page-link" href="/?page={{ i }}">{{ i }}</a></li>
+        <li class="page-item"><a class="page-link" style="background-color: #3E5879; color: white" href="/?page={{ i }}">{{ i }}</a></li>
         {% endfor %}
     </ul>
     {% endif %}

@@ -18,7 +18,7 @@
         <td>{{ c.name }}</td>
         <td>{{ "{:,.0f}".format(c.price) }} VNĐ</td>
         <td>
-            <input type="number" value="{{ c.quantity }}" class="form-control" />
+            <input type="number" value="{{ c.quantity }}" min="1" class="form-control quantity" onchange="changeQuantity({{c.id}})" />
         </td>
         <td>
             <button class="btn btn-danger" onclick="removeFromCart({{c.id}})">&times;</button>

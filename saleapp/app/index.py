@@ -94,7 +94,7 @@ def add_to_cart():
         }
 
     session['cart'] = cart
-    print(cart)
+
 
     return jsonify(utils.stats_cart(cart))
 
@@ -108,12 +108,24 @@ def remove_from_cart():
     if id in cart:
         del cart[id]
         session['cart'] = cart
-        total_quantity = sum(item['quantity'] for item in cart.values())
+        # total_quantity = sum(item['quantity'] for item in cart.values())
+    return jsonify(utils.stats_cart(cart))
+
+@app.route('/update-quantity', methods=['POST'])
+def update_quantity():
+    data = request.json
+    id = str(data.get('id'))
+
+    cart = session.get('cart')
+
+
+    cart[id]["quantity"] = data.get("quantity")
+    session['cart'] = cart
     return jsonify(utils.stats_cart(cart))
 
 @app.route('/cart')
 def cart():
-    return render_template('cart.html')
+    return render_template('cart.html',UserRole = UserRole)
 
 @app.route('/house',methods=['post','get'])
 def house():

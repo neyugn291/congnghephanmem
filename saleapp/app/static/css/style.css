@@ -1,10 +1,18 @@
-body {
-    background-color: lightblue;
-    color: darkblue;
+
+
+
+* {
+  font-family: "Libre Bodoni", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+.main {
+    background-color:#D8C4B6;
+    margin-top: 75px;
 }
 
-.card-body h4 {
-    overflow: hidden; /* Ẩn phần nội dung dài hơn */
-    text-overflow: ellipsis; /* Thêm dấu "..." khi tên sản phẩm quá dài */
-    white-space: nowrap;
+body {
+    background-color: #F5EFE7;
+    color: #ffffff;
 }

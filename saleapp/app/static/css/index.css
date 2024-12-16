@@ -1,0 +1,9 @@
+.card-body h4 {
+    overflow: hidden; /* Ẩn phần nội dung dài hơn */
+    text-overflow: ellipsis; /* Thêm dấu "..." khi tên sản phẩm quá dài */
+    white-space: nowrap;
+}
+
+.card-body {
+    background-color: #F5EFE7;
+}
