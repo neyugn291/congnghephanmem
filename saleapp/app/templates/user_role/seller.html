@@ -1,0 +1,7 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+  <h1 class="text-success mt-1">Chào {{ current_user.username }}</h1>
+{% endif %}
+{% endblock %}

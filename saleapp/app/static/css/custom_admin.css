@@ -1,0 +1,9 @@
+.container {
+    background-image: url("https://res.cloudinary.com/dzbkb9zaz/image/upload/v1733805811/booktech_t7ri49.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    min-height: 100vh;
+    background-color: #e7e3dd;
+}
+
