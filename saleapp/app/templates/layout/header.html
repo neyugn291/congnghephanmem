@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-sm navbar-dark fixed-top" style="background-color:#213555 ">
+<nav class="navbar navbar-expand-sm navbar-dark fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Le Van Luong Book Store</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
@@ -15,7 +15,7 @@
                     </li>
                 {% endif %}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Danh muc</a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Danh mục</a>
                         <ul class="dropdown-menu">
                             {% for c in categories %}
                             <li><a class="dropdown-item" href="/?category_id={{c.id}}">{{ c.name }}</a></li>
@@ -27,20 +27,20 @@
 
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link text-danger" href="/">
+                        <a class="nav-link welcome" href="/">
                             <img src="{{ current_user.avatar }}" width="25" class="rounded-circle" />
                             Chào {{ current_user.username }}.
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-success" href="/logout">Đăng xuất</a>
+                        <a class="nav-link" id="logout" href="/logout">Đăng xuất</a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link text-danger" href="/login">Đăng nhập</a>
+                        <a class="nav-link" id="login" href="/login">Đăng nhập</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-success" href="/register">Đăng ký</a>
+                        <a class="nav-link" id="register" href="/register">Đăng ký</a>
                     </li>
                     {% endif %}
                     <li class="nav-item">

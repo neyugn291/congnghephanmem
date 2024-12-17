@@ -1,56 +1,126 @@
-import random
-from stringprep import c8_set
 
+from sqlalchemy.dialects.mysql import DATETIME
+from datetime import datetime, date
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, Boolean, null
 from app import db, app
 from enum import Enum as RoleEnum
 import hashlib
 from flask_login import UserMixin
 
+
 class UserRole(RoleEnum):
     ADMIN = 1
     USER = 2
-    HOUSE = 3
+    WAREHOUSE = 3
     SELLER = 4
+
+
+class Location(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    city = Column(String(255), nullable=False)  # Thành phố
+    district = Column(String(255), nullable=False)  # Quận Huyện
+    commune = Column(String(255), nullable=False)  # Xã
+    specific = Column(String(255), nullable=False)  # Cụ thể : số nhà, số đường
+
+    users = relationship('User', backref='location', lazy=True)
 
 
 class User(db.Model, UserMixin):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
-    username = Column(String(100), nullable=False, unique=True)
+
     password = Column(String(100), nullable=False)
+    username = Column(String(100), nullable=False, unique=True)
+    email = Column(String(255))
+    phone = Column(String(255))
+    location_id = Column(Integer, ForeignKey(Location.id))
     avatar = Column(String(100),
                     default="https://res.cloudinary.com/dxxwcby8l/image/upload/v1690528735/cg6clgelp8zjwlehqsst.jpg")
     user_role = Column(Enum(UserRole), default=UserRole.USER)
+
+    orders = relationship('Order', backref='user', lazy=True)
+    invoices_customer = relationship('Invoice', back_populates='customer',foreign_keys='Invoice.customer_id', lazy=True)
+    invoices_seller = relationship('Invoice', back_populates='seller',foreign_keys='Invoice.seller_id', lazy=True)
+
 
 
 class Category(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False, unique=True)
-    products = relationship('Product', backref='category', lazy=True)
+
+    books = relationship('Book', backref='category', lazy=True)
 
     def __str__(self):
         return self.name
 
 
-class Product(db.Model):
+# class Product(db.Model):
+#     id = Column(Integer, primary_key=True, autoincrement=True)
+#     name = Column(String(50), nullable=False, unique=True)
+#     author = Column(String(255), nullable=True)
+#     price = Column(Float, default=0)
+#     image = Column(String(100), nullable=True)
+#     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
+#
+#     def __str__(self):
+#         return self.name
+
+
+class Book(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False, unique=True)
     author = Column(String(255), nullable=True)
     price = Column(Float, default=0)
     image = Column(String(100), nullable=True)
+    description = Column(String(255), default='')
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
+
+    received_note_details = relationship('ReceivedNoteDetail', backref='book', lazy=True)
 
     def __str__(self):
         return self.name
+
+
+class ReceivedNote(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    received_day = Column(DATETIME, default=datetime.now(), nullable=False)
+
+    received_note_details = relationship('ReceivedNoteDetail', backref='note', lazy=True)
+
+
+class ReceivedNoteDetail(db.Model):
+    note_id = Column(Integer, ForeignKey(ReceivedNote.id), primary_key=True)
+    book_id = Column(Integer, ForeignKey(Book.id), primary_key=True)
+    quantity = Column(Integer, nullable=True)
+
+
+class Order(db.Model):
+    order_id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
+    order_day = Column(DATETIME, nullable=False)
+    quantity = Column(Integer, nullable=False)
+    is_active = Column(Boolean, default=True, nullable=True)
+
+
+class Invoice(db.Model):
+    invoice_id = Column(Integer, primary_key=True, autoincrement=True)
+    customer_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    seller_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
+    invoice_day = Column(DATETIME, nullable=False)
+    quantity = Column(Integer, nullable=False)
+
+    customer = relationship('User', back_populates='invoices_customer', foreign_keys=[customer_id])
+    seller = relationship('User', back_populates='invoices_seller', foreign_keys=[seller_id])
 
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
 
-        u = User(name='admin', username='admin', password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        u = User(name='Phan Le Nguyen', username='admin',email='abc@com',phone='0123', password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
                  user_role=UserRole.ADMIN)
         db.session.add(u)
         db.session.commit()
@@ -120,7 +190,7 @@ if __name__ == '__main__':
         }]
 
         for p in data:
-            prod = Product(name=p['name'], author=p['author'], price=p['price'],
+            prod = Book(name=p['name'], author=p['author'], price=p['price'],
                            image=p['image'], category_id=p['category_id'])
             db.session.add(prod)
 

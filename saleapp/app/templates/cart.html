@@ -1,7 +1,7 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
-<h1 class="text-center text-success mt-1">GIỎ HÀNG</h1>
+<h1 class="text-center mt-1 dark-blue-color">GIỎ HÀNG</h1>
 
 {% if 'cart' in session %}
 
@@ -29,7 +29,7 @@
 
 <div class="alert alert-info cart-info">
     <h3>Tổng sản phẩm: {{ cart_stats.total_quantity }}</h3>
-    <h3>Tổng tiền: {{ "{:,.0f}".format(cart_stats.total_amount) }} VNĐ</h3>
+    <h3>Tổng tiền: {{ "{:,.0f}".format(cart_stats.total_amount) }}VNĐ</h3>
 </div>
 
 <div>

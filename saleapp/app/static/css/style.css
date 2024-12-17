@@ -1,5 +1,10 @@
 
-
+:root {
+    --navy-color: #213555;
+    --blue-color: #3E5879;
+    --beige-color: #D8C4B6;
+    --white-color: #F5EFE7;
+}
 
 * {
   font-family: "Libre Bodoni", serif;
@@ -8,11 +13,18 @@
   font-style: normal;
 }
 .main {
-    background-color:#D8C4B6;
+    background-color: var(--beige-color);
     margin-top: 75px;
 }
 
 body {
-    background-color: #F5EFE7;
-    color: #ffffff;
+    background-color: var(--white-color);
+    color: white;
 }
+
+.navbar {
+    background-color:var(--navy-color);
+}
+
+
+

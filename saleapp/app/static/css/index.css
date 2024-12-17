@@ -5,5 +5,21 @@
 }
 
 .card-body {
-    background-color: #F5EFE7;
+    background-color: var(--white-color);
+}
+
+#login {
+    color: var(--beige-color);
+}
+
+#register {
+    color: var(--white-color);
+}
+
+#logout {
+    color: var(--white-color);
+}
+
+.welcome img {
+    color: var(--beige-color);
 }

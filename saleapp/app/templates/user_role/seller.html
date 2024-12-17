@@ -3,7 +3,6 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/seller.css') }}"/>
 {% if current_user.is_authenticated %}
-    <h1 class="text-success mt-1">Chào {{ current_user.username }}</h1>
     <table class="table table-bordered">
 
 

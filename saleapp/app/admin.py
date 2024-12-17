@@ -1,6 +1,6 @@
 import hashlib
 
-from app.models import Category, Product, User, UserRole
+from app.models import Category, Book, User, UserRole
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import BaseView, expose
 from flask_admin import Admin
@@ -40,8 +40,8 @@ class CategoryView(AdminView):
 
 
 
-class ProductView(AdminView):
-    column_list = ['id', 'name', 'price']
+class BookView(AdminView):
+    column_list = ['id','author' , 'name', 'price']
     can_export = True
     column_searchable_list = ['name']
     page_size = 5
@@ -74,7 +74,7 @@ class StatsView(AuthenticatedView):
 
 
 admin.add_view(CategoryView(Category, db.session))
-admin.add_view(ProductView(Product, db.session))
+admin.add_view(BookView(Book, db.session))
 admin.add_view(UserView(User, db.session))
 admin.add_view(StatsView(name='Thống kê'))
 admin.add_view(LogoutView(name='Đăng xuất'))
