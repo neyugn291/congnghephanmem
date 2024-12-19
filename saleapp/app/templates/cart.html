@@ -32,9 +32,13 @@
     <h3>Tổng tiền: {{ "{:,.0f}".format(cart_stats.total_amount) }}VNĐ</h3>
 </div>
 
+{% if current_user.is_authenticated %}
 <div>
-    <button class="btn btn-success">Thanh toán</button>
+    <button class="btn btn-success" onclick="pay()">Thanh toán</button>
 </div>
+{% else %}
+<p>Vui lòng <a href="/login?next=/cart">đăng nhập</a> để thanh toán!</p>
+{% endif %}
 
 {% else %}
 <div class="alert alert-info">KHÔNG có sản phẩm nào trong giỏ!</div>

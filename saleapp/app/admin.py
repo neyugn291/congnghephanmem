@@ -2,33 +2,18 @@ import hashlib
 
 from app.models import Category, Book, User, UserRole
 from flask_admin.contrib.sqla import ModelView
-from flask_admin import BaseView, expose
+from flask_admin import BaseView, expose, AdminIndexView
 from flask_admin import Admin
 from flask_login import current_user, logout_user
 from flask import redirect
-from app import app, db
+from app import app, db, dao
 
+class MyAdminIndexView(AdminIndexView):
+    @expose('/')
+    def index(self):
+        return self.render('admin/index.html', stats=dao.books_stats())
 
-admin = Admin(app=app, name='Book Store Admin', template_mode='bootstrap4')
-
-
-# class HouseView(ModelView):
-#     def is_accessible(self):
-#         return current_user.is_authenticated and current_user.user_role == UserRole.HOUSE
-#
-#
-#
-# class CustomHouseView(BaseView):
-#     def is_accessible(self):
-#         return current_user.is_authenticated and current_user.user_role == UserRole.HOUSE
-#
-#     @expose('/')
-#     def index(self):
-#         # return self.render('user_role/house.html')
-#         return redirect('user_role/house.html')
-#
-# admin.add_view(CustomHouseView(name='Dashboard Quản Lý Kho'))
-
+admin = Admin(app=app, name='Book Store Admin', template_mode='bootstrap4', index_view=MyAdminIndexView())
 
 class AdminView(ModelView):
     def is_accessible(self):
@@ -70,7 +55,7 @@ class LogoutView(AuthenticatedView):
 class StatsView(AuthenticatedView):
     @expose('/')
     def index(self):
-        return self.render('admin/stats.html')
+        return self.render('admin/stats.html', stats=dao.revenue_stats(), stats2=dao.revenue_time())
 
 
 admin.add_view(CategoryView(Category, db.session))

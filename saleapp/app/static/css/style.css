@@ -1,9 +1,9 @@
 
 :root {
-    --navy-color: #213555;
-    --blue-color: #3E5879;
-    --beige-color: #D8C4B6;
-    --white-color: #F5EFE7;
+    --navy-color: #2A3663;
+    --blue-color: #B59F78;
+    --beige-color: #D8DBBD;
+    --white-color: #FAF6E3;
 }
 
 * {
@@ -13,8 +13,9 @@
   font-style: normal;
 }
 .main {
-    background-color: var(--beige-color);
+    background-color: var(--blue-color);
     margin-top: 75px;
+    padding-top: 25px;
 }
 
 body {

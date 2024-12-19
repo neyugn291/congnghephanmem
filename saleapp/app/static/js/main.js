@@ -37,6 +37,19 @@ function removeFromCart(id) {
     });
 }
 
+// function removeFromCart(productId) {
+//     if (confirm("Bạn chắc chắn xóa không?") === true) {
+//         fetch(`/api/carts/${productId}`, {
+//             method: "delete"
+//         }).then(res => res.json()).then(data => {
+//
+//
+//             document.getElementById(`cart${productId}`).style.display = "none";
+//             renderInfoCart(data);
+//         })
+//     }
+// }
+
 function changeQuantity(id) {
     let quantity = parseInt(document.querySelector(`#cart-id-${id} .quantity`).value);
 
@@ -61,6 +74,21 @@ function changeQuantity(id) {
     })
 }
 
+function updateCart(productId, obj) {
+    fetch(`/api/carts/${productId}`, {
+        method: "put",
+        body: JSON.stringify({
+            quantity: obj.value
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(res => res.json()).then(data => {
+
+        renderInfoCart(data);
+    })
+}
+
 function renderInfoCart(data) {
     let items = document.getElementsByClassName("cart-counter");
     for (let item of items)
@@ -72,4 +100,18 @@ function renderInfoCart(data) {
 
     info[0].textContent = "Tổng sản phẩm: " + data.total_quantity;
     info[1].textContent = "Tổng tiền: " + formattedTotalAmount + "VNĐ";
+}
+
+function pay() {
+    if (confirm("Bạn chắc chắn thanh toán không?") === true) {
+        fetch('/api/pay', {
+            method: 'post'
+        }).then(res => res.json()).then(data => {
+            console.log(data)
+            if (data.status === 200) {
+                alert("Thanh toán thành công!");
+                location.reload();
+            }
+        })
+    }
 }

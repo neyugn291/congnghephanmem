@@ -1,8 +1,6 @@
-
-from sqlalchemy.dialects.mysql import DATETIME
 from datetime import datetime, date
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, Boolean, null
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, Boolean, null, DateTime
 from app import db, app
 from enum import Enum as RoleEnum
 import hashlib
@@ -39,9 +37,10 @@ class User(db.Model, UserMixin):
                     default="https://res.cloudinary.com/dxxwcby8l/image/upload/v1690528735/cg6clgelp8zjwlehqsst.jpg")
     user_role = Column(Enum(UserRole), default=UserRole.USER)
 
+    received_notes = relationship('ReceivedNote', backref='warehouse',lazy=True)
     orders = relationship('Order', backref='user', lazy=True)
-    invoices_customer = relationship('Invoice', back_populates='customer',foreign_keys='Invoice.customer_id', lazy=True)
-    invoices_seller = relationship('Invoice', back_populates='seller',foreign_keys='Invoice.seller_id', lazy=True)
+    receipts_customer = relationship('Receipt', back_populates='customer',foreign_keys='Receipt.customer_id', lazy=True)
+    receipts_seller = relationship('Receipt', back_populates='seller',foreign_keys='Receipt.seller_id', lazy=True)
 
 
 
@@ -77,49 +76,112 @@ class Book(db.Model):
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
 
     received_note_details = relationship('ReceivedNoteDetail', backref='book', lazy=True)
-
+    order_details = relationship('OrderDetail', backref='book', lazy=True)
+    receipts_details = relationship('ReceiptDetail', backref='book', lazy=True)
     def __str__(self):
         return self.name
 
 
 class ReceivedNote(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    received_day = Column(DATETIME, default=datetime.now(), nullable=False)
+    warehouse_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    received_day = Column(DateTime, default=datetime.now(), nullable=False)
 
-    received_note_details = relationship('ReceivedNoteDetail', backref='note', lazy=True)
+    received_note_details = relationship('ReceivedNoteDetail', backref='received_note', lazy=True)
 
 
 class ReceivedNoteDetail(db.Model):
-    note_id = Column(Integer, ForeignKey(ReceivedNote.id), primary_key=True)
-    book_id = Column(Integer, ForeignKey(Book.id), primary_key=True)
-    quantity = Column(Integer, nullable=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    note_id = Column(Integer, ForeignKey(ReceivedNote.id), nullable=False)
+    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
+    quantity = Column(Integer, nullable=False)
 
 
 class Order(db.Model):
-    order_id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    order_day = Column(DateTime, default=datetime.now())
+    is_active = Column(Boolean, default=True)
+
+    details = relationship('OrderDetail', backref='order',lazy=True)
+
+
+class OrderDetail (db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    order_id = Column(Integer, ForeignKey(Order.id), nullable=False)
     book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
-    order_day = Column(DATETIME, nullable=False)
     quantity = Column(Integer, nullable=False)
-    is_active = Column(Boolean, default=True, nullable=True)
+    price = Column(Float, default=0)
 
-
-class Invoice(db.Model):
-    invoice_id = Column(Integer, primary_key=True, autoincrement=True)
+class Receipt(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
     customer_id = Column(Integer, ForeignKey(User.id), nullable=False)
-    seller_id = Column(Integer, ForeignKey(User.id), nullable=False)
-    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
-    invoice_day = Column(DATETIME, nullable=False)
-    quantity = Column(Integer, nullable=False)
+    seller_id = Column(Integer, ForeignKey(User.id))
+    created_date = Column(DateTime, default=datetime.now())
 
-    customer = relationship('User', back_populates='invoices_customer', foreign_keys=[customer_id])
-    seller = relationship('User', back_populates='invoices_seller', foreign_keys=[seller_id])
+    customer = relationship('User', back_populates='receipts_customer', foreign_keys=[customer_id])
+    seller = relationship('User', back_populates='receipts_seller', foreign_keys=[seller_id])
+    details = relationship('ReceiptDetail', backref='receipt', lazy=True)
+
+class ReceiptDetail(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    receipt_id = Column(Integer, ForeignKey(Receipt.id), nullable=False)
+    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
+    quantity = Column(Integer, nullable=False)
+    price = Column(Float, default=0)
 
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
 
+
+
+        location = [{
+            "city":"Thành Phố Hồ Chí Minh",
+            "district": "Nhà Bè",
+            "commune":"xã Nhơn Đức",
+            "specific": "Khu dân cư Nhơn Đức"
+        }, {
+            "city": "Thành Phố Hồ Chí Minh",
+            "district": "Quận 01",
+            "commune": "Phường Cô Giang",
+            "specific": "35-37 Hồ Hảo Hớn"
+        }, {
+            "city": "Thành Phố Hồ Chí Minh",
+            "district": "Quận 3",
+            "commune": "Phường Võ Thị Sáu",
+            "specific": "97 Võ Văn Tần"
+        }, {
+            "city": "Thành Phố Hồ Chí Minh",
+            "district": "Quận 1",
+            "commune": "Phường Đa Kao",
+            "specific": "02 Mai Thị Lựu"
+        }, {
+            "city": "Bình Dương",
+            "district": "Thành phố Thủ Dầu Một",
+            "commune": "Phường Phú Lợi",
+            "specific": "68 Lê Thị Trung"
+        }, {
+            "city": "Đồng Nai",
+            "district": "Thành phố Biên Hòa",
+            "commune": "Phường Long Bình Tân",
+            "specific": "Đường số 9"
+        }, {
+            "city": "Khánh Hòa",
+            "district": "Thị xã Ninh Hòa",
+            "commune": "phường Ninh Hiệp",
+            "specific": "Tổ dân phố 17"
+        }]
+
+        for l in location:
+            loca = Location(city=l['city'],
+                            district=l['district'],
+                            commune=l['commune'],
+                            specific=l['specific']
+                            )
+            db.session.add(loca)
+        db.session.commit()
         u = User(name='Phan Le Nguyen', username='admin',email='abc@com',phone='0123', password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
                  user_role=UserRole.ADMIN)
         db.session.add(u)
