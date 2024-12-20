@@ -157,3 +157,34 @@ function search(value) {
         //     ulEle.appendChild(newLi);
         // }
 }
+
+function addComment(bookId) {
+    fetch(`/api/books/${bookId}/comments`, {
+        method: "post",
+        body: JSON.stringify({
+            'content': document.getElementById("comment").value
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(res => res.json()).then(c => {
+        let html =  `
+            <li class="list-group-item">
+
+              <div class="row">
+                  <div class="col-md-1 col-6">
+                      <img src="${ c.user.avatar }" class="img-fluid rounded-circle" />
+                  </div>
+                  <div class="col-md-11 col-6">
+                      <p>${ c.content }</p>
+                      <p class="date">${ moment(c.created_date).locale("vi").fromNow() }</p>
+                  </div>
+              </div>
+
+          </li>
+        `;
+
+        let h = document.getElementById("comments");
+        h.innerHTML = html + h.innerHTML;
+    })
+}

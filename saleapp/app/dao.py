@@ -1,5 +1,5 @@
-from app.models import Category, Book, User, UserRole, Receipt, ReceiptDetail, ReceivedNote
-from app import app, db, dao
+from app.models import Category, Book, User, UserRole, Receipt, ReceiptDetail, ReceivedNote, Comment
+from app import app, db
 import hashlib
 import cloudinary.uploader
 from flask_login import current_user
@@ -106,7 +106,15 @@ def books_stats():
 def get_book_by_id(id):
     return Book.query.get(id)
 
+def load_comments(book_id):
+    return Comment.query.filter(Comment.book_id.__eq__(book_id)).order_by(-Comment.id).all()
 
+def add_comment(content, book_id):
+    c = Comment(content=content, book_id=book_id, user=current_user)
+    db.session.add(c)
+    db.session.commit()
+
+    return c
 
 if __name__ == '__main__':
     with app.app_context():

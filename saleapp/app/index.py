@@ -23,7 +23,20 @@ def index():
 @app.route('/books/<book_id>')
 def details(book_id):
     return render_template('details.html',
-                           product=dao.get_book_by_id(book_id),UserRole=UserRole)
+                           book=dao.get_book_by_id(book_id),UserRole=UserRole,
+                           comments=dao.load_comments(book_id))
+
+@app.route('/api/books/<book_id>/comments', methods=['post'])
+def add_comment(book_id):
+    c = dao.add_comment(content=request.json.get('content'), book_id=book_id)
+    return {
+        'content': c.content,
+        'created_date': c.created_date,
+        'user': {
+            'avatar': c.user.avatar
+        }
+    }
+
 
 @app.route("/login", methods=['get', 'post'])
 def login_process():
@@ -130,6 +143,7 @@ def update_quantity():
 
 @app.route('/api/pay', methods=['post'])
 def pay():
+
     try:
         dao.add_receipt(session.get('cart'))
     except:

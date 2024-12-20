@@ -27,9 +27,8 @@ class Location(db.Model):
 class User(db.Model, UserMixin):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
-
-    password = Column(String(100), nullable=False)
     username = Column(String(100), nullable=False, unique=True)
+    password = Column(String(100), nullable=False)
     email = Column(String(255))
     phone = Column(String(255))
     location_id = Column(Integer, ForeignKey(Location.id))
@@ -41,7 +40,7 @@ class User(db.Model, UserMixin):
     orders = relationship('Order', backref='user', lazy=True)
     receipts_customer = relationship('Receipt', back_populates='customer',foreign_keys='Receipt.customer_id', lazy=True)
     receipts_seller = relationship('Receipt', back_populates='seller',foreign_keys='Receipt.seller_id', lazy=True)
-
+    comments = relationship('Comment', backref='user', lazy=True)
 
 
 class Category(db.Model):
@@ -69,15 +68,16 @@ class Category(db.Model):
 class Book(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False, unique=True)
-    author = Column(String(255), nullable=True)
+    author = Column(String(255), nullable=False, default="")
     price = Column(Float, default=0)
-    image = Column(String(100), nullable=True)
+    image = Column(String(100), nullable=False, default="")
     description = Column(String(255), nullable=True)
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
 
     received_note_details = relationship('ReceivedNoteDetail', backref='book', lazy=True)
     order_details = relationship('OrderDetail', backref='book', lazy=True)
     receipts_details = relationship('ReceiptDetail', backref='book', lazy=True)
+    comments = relationship('Comment', backref='book', lazy=True)
     def __str__(self):
         return self.name
 
@@ -129,134 +129,144 @@ class ReceiptDetail(db.Model):
     quantity = Column(Integer, nullable=False)
     price = Column(Float, default=0)
 
+class Comment(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    content = Column(String(255), nullable=False)
+    created_date = Column(DateTime, default=datetime.now())
+    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
+
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
 
-        default_category = Category(id = 0,name = "Default Category")
-        default_book = Book(id = 0, name = "Default Book", category_id = 0)
-        # db.session.add(default_category)
-        # db.session.commit()
-        db.session.add(default_book)
 
-        # location = [{
-        #     "city":"Thành Phố Hồ Chí Minh",
-        #     "district": "Nhà Bè",
-        #     "commune":"xã Nhơn Đức",
-        #     "specific": "Khu dân cư Nhơn Đức"
-        # }, {
-        #     "city": "Thành Phố Hồ Chí Minh",
-        #     "district": "Quận 01",
-        #     "commune": "Phường Cô Giang",
-        #     "specific": "35-37 Hồ Hảo Hớn"
-        # }, {
-        #     "city": "Thành Phố Hồ Chí Minh",
-        #     "district": "Quận 3",
-        #     "commune": "Phường Võ Thị Sáu",
-        #     "specific": "97 Võ Văn Tần"
-        # }, {
-        #     "city": "Thành Phố Hồ Chí Minh",
-        #     "district": "Quận 1",
-        #     "commune": "Phường Đa Kao",
-        #     "specific": "02 Mai Thị Lựu"
-        # }, {
-        #     "city": "Bình Dương",
-        #     "district": "Thành phố Thủ Dầu Một",
-        #     "commune": "Phường Phú Lợi",
-        #     "specific": "68 Lê Thị Trung"
-        # }, {
-        #     "city": "Đồng Nai",
-        #     "district": "Thành phố Biên Hòa",
-        #     "commune": "Phường Long Bình Tân",
-        #     "specific": "Đường số 9"
-        # }, {
-        #     "city": "Khánh Hòa",
-        #     "district": "Thị xã Ninh Hòa",
-        #     "commune": "phường Ninh Hiệp",
-        #     "specific": "Tổ dân phố 17"
-        # }]
+        # default_category = Category(id = 0,name = "Default Category")
+        #default_book = Book(id = 0, name = "Default Book", category_id = 0)
+        # db.session.add(default_category)
+        #db.session.add(default_book)
+        #db.session.commit()
         #
-        # for l in location:
-        #     loca = Location(city=l['city'],
-        #                     district=l['district'],
-        #                     commune=l['commune'],
-        #                     specific=l['specific']
-        #                     )
-        #     db.session.add(loca)
-        # db.session.commit()
-        # u = User(name='Phan Le Nguyen', username='admin',email='abc@com',phone='0123', password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-        #          user_role=UserRole.ADMIN)
-        # db.session.add(u)
-        # db.session.commit()
-        #
-        # c1 = Category(name='Thieu nhi')
-        # c2 = Category(name='Giao khoa')
-        # c3 = Category(name='Du ky')
-        # c4 = Category(name='Ky su')
-        # c5 = Category(name='Kinh di')
-        # c6 = Category(name='Ngon tinh')
-        # c7 = Category(name='Tho ca')
-        # c8 = Category(name='Tieu thuyet')
-        # c9 = Category(name='Trinh tham')
-        # c10 = Category(name='Truyen cuoi')
-        #
-        # db.session.add_all([c1, c2, c3, c4, c5, c6, c7, c8, c9, c10])
-        # db.session.commit()
-        #
-        # data = [{
-        #     "name": "Khoản tiết kiệm của mẹ",
-        #     "author": "",
-        #     "price": 170000,
-        #     "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846487/image-ThieuNhi_3_ova65g.jpg",
-        #     "category_id": 1
-        # }, {
-        #     "name": "Mẹ không phải người giúp việc",
-        #     "author": "",
-        #     "price": 160000,
-        #     "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846486/image-ThieuNhi_2_h67bft.jpg",
-        #     "category_id": 1
-        # }, {
-        #     "name": "Nguồn năng lượng tích cực",
-        #     "author": "",
-        #     "price": 82000,
-        #     "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846491/image-ThieuNhi_1_rsimyy.jpg",
-        #     "category_id": 1
-        # }, {
-        #     "name": "Bài tập tin học 6",
-        #     "author": "",
-        #     "price": 20000,
-        #     "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846492/image-GiaoKhoa_3_djbatm.jpg",
-        #     "category_id": 2
-        # }, {
-        #     "name": "Tiếng viêt 3",
-        #     "author": "",
-        #     "price": 30000,
-        #     "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846491/image-GiaoKhoa_2_fybyon.jpg",
-        #     "category_id": 2
-        # }, {
-        #     "name": "Bài tập ngữ văn 7",
-        #     "author": "",
-        #     "price": 20000,
-        #     "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846492/image-GiaoKhoa_1_tguxox.jpg",
-        #     "category_id": 2
-        # }, {
-        #     "name": "Giấc mơ Nhật",
-        #     "author": "",
-        #     "price": 120000,
-        #     "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846492/image-GiaoKhoa_3_djbatm.jpg",
-        #     "category_id": 3
-        # }, {
-        #         "name": "Châu Âu vạn dặm",
-        #         "author": "",
-        #         "price": 89000,
-        #         "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846492/image-GiaoKhoa_3_djbatm.jpg",
-        #         "category_id": 3
-        # }]
-        #
-        # for p in data:
-        #     prod = Book(name=p['name'], author=p['author'], price=p['price'],
-        #                    image=p['image'], category_id=p['category_id'])
-        #     db.session.add(prod)
+        u = User(name='Phan Le Nguyen', username='admin', email='abc@com', phone='0123',
+                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+                 user_role=UserRole.ADMIN)
+        db.session.add(u)
+        db.session.commit()
+
+        location = [{
+            "city":"Thành Phố Hồ Chí Minh",
+            "district": "Nhà Bè",
+            "commune":"xã Nhơn Đức",
+            "specific": "Khu dân cư Nhơn Đức"
+        }, {
+            "city": "Thành Phố Hồ Chí Minh",
+            "district": "Quận 01",
+            "commune": "Phường Cô Giang",
+            "specific": "35-37 Hồ Hảo Hớn"
+        }, {
+            "city": "Thành Phố Hồ Chí Minh",
+            "district": "Quận 3",
+            "commune": "Phường Võ Thị Sáu",
+            "specific": "97 Võ Văn Tần"
+        }, {
+            "city": "Thành Phố Hồ Chí Minh",
+            "district": "Quận 1",
+            "commune": "Phường Đa Kao",
+            "specific": "02 Mai Thị Lựu"
+        }, {
+            "city": "Bình Dương",
+            "district": "Thành phố Thủ Dầu Một",
+            "commune": "Phường Phú Lợi",
+            "specific": "68 Lê Thị Trung"
+        }, {
+            "city": "Đồng Nai",
+            "district": "Thành phố Biên Hòa",
+            "commune": "Phường Long Bình Tân",
+            "specific": "Đường số 9"
+        }, {
+            "city": "Khánh Hòa",
+            "district": "Thị xã Ninh Hòa",
+            "commune": "phường Ninh Hiệp",
+            "specific": "Tổ dân phố 17"
+        }]
+
+        for l in location:
+            loca = Location(city=l['city'],
+                            district=l['district'],
+                            commune=l['commune'],
+                            specific=l['specific']
+                            )
+            db.session.add(loca)
+        db.session.commit()
+
+        c1 = Category(name='Thieu nhi')
+        c2 = Category(name='Giao khoa')
+        c3 = Category(name='Du ky')
+        c4 = Category(name='Ky su')
+        c5 = Category(name='Kinh di')
+        c6 = Category(name='Ngon tinh')
+        c7 = Category(name='Tho ca')
+        c8 = Category(name='Tieu thuyet')
+        c9 = Category(name='Trinh tham')
+        c10 = Category(name='Truyen cuoi')
+
+        db.session.add_all([c1, c2, c3, c4, c5, c6, c7, c8, c9, c10])
+        db.session.commit()
+
+        data = [{
+            "name": "Khoản tiết kiệm của mẹ",
+            "author": "",
+            "price": 170000,
+            "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846487/image-ThieuNhi_3_ova65g.jpg",
+            "category_id": 1
+        }, {
+            "name": "Mẹ không phải người giúp việc",
+            "author": "",
+            "price": 160000,
+            "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846486/image-ThieuNhi_2_h67bft.jpg",
+            "category_id": 1
+        }, {
+            "name": "Nguồn năng lượng tích cực",
+            "author": "",
+            "price": 82000,
+            "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846491/image-ThieuNhi_1_rsimyy.jpg",
+            "category_id": 1
+        }, {
+            "name": "Bài tập tin học 6",
+            "author": "",
+            "price": 20000,
+            "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846492/image-GiaoKhoa_3_djbatm.jpg",
+            "category_id": 2
+        }, {
+            "name": "Tiếng viêt 3",
+            "author": "",
+            "price": 30000,
+            "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846491/image-GiaoKhoa_2_fybyon.jpg",
+            "category_id": 2
+        }, {
+            "name": "Bài tập ngữ văn 7",
+            "author": "",
+            "price": 20000,
+            "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846492/image-GiaoKhoa_1_tguxox.jpg",
+            "category_id": 2
+        }, {
+            "name": "Giấc mơ Nhật",
+            "author": "",
+            "price": 120000,
+            "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846492/image-GiaoKhoa_3_djbatm.jpg",
+            "category_id": 3
+        }, {
+                "name": "Châu Âu vạn dặm",
+                "author": "",
+                "price": 89000,
+                "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846492/image-GiaoKhoa_3_djbatm.jpg",
+                "category_id": 3
+        }]
+
+        for p in data:
+            prod = Book(name=p['name'], author=p['author'], price=p['price'],
+                           image=p['image'], category_id=p['category_id'])
+            db.session.add(prod)
 
         db.session.commit()
