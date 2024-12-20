@@ -1,4 +1,5 @@
 import math
+from itertools import product
 
 from flask import render_template, request, redirect, jsonify, session
 import dao, utils
@@ -13,16 +14,16 @@ def index():
     kw = request.args.get('kw')
     page = request.args.get('page', 1)
 
-    prods = dao.load_books(cate_id=cate_id, kw=kw, page=int(page))
+    books = dao.load_books(cate_id=cate_id, kw=kw, page=int(page))
 
     total = dao.count_books()
     page_size = app.config['PAGE_SIZE']
-    return render_template("index.html", products=prods, pages=math.ceil(total/page_size), UserRole=UserRole)
+    return render_template("index.html", books=books, pages=math.ceil(total/page_size), UserRole=UserRole)
 
 @app.route('/books/<book_id>')
 def details(book_id):
     return render_template('details.html',
-                           product=dao.get_book_by_id(book_id))
+                           product=dao.get_book_by_id(book_id),UserRole=UserRole)
 
 @app.route("/login", methods=['get', 'post'])
 def login_process():
@@ -142,8 +143,11 @@ def cart():
     return render_template('cart.html',UserRole = UserRole)
 
 @app.route('/warehouse',methods=['post','get'])
-def house():
-    return render_template('user_role/warehouse.html',UserRole = UserRole)
+def warehouse():
+    kw = request.args.get('dropdownMenuButton')
+    page_size = dao.count_books()
+    name_books = dao.load_books(kw = kw, page_size= page_size)
+    return render_template('user_role/warehouse.html',names = name_books,UserRole = UserRole)
 
 @app.route('/seller',methods=['post','get'])
 def seller():

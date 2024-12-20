@@ -27,5 +27,8 @@ body {
     background-color:var(--navy-color);
 }
 
+.none {
+    display: none;
+}
 
 

@@ -21,7 +21,7 @@ class AdminView(ModelView):
 
 
 class CategoryView(AdminView):
-    column_list = ['name', 'products']
+    column_list = ['name', 'books']
 
 
 

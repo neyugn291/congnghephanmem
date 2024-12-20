@@ -1,5 +1,5 @@
-from app.models import Category, Book, User, UserRole, Receipt, ReceiptDetail
-from app import app, db
+from app.models import Category, Book, User, UserRole, Receipt, ReceiptDetail, ReceivedNote
+from app import app, db, dao
 import hashlib
 import cloudinary.uploader
 from flask_login import current_user
@@ -10,20 +10,25 @@ def load_categories():
     return Category.query.order_by("id").all()
 
 
-def load_books(cate_id=None, kw=None, page=1):
+def load_books(cate_id=None, kw=None, page=1, page_size = 0):
     query = Book.query
 
     if kw:
-        query = query.filter(Book.name.contains(kw))
+        query = query.filter(Book.name.like(f"{kw}%"))
 
     if cate_id:
         query = query.filter(Book.category_id == cate_id)
 
-    page_size = app.config["PAGE_SIZE"]
+    if not page_size:
+        page_size = app.config["PAGE_SIZE"]
     start = (page - 1) * page_size
     query = query.slice(start, start + page_size)
 
     return query.all()
+
+
+
+
 
 
 def count_books():
@@ -68,6 +73,16 @@ def add_receipt(cart):
             db.session.add(d)
 
         db.session.commit()
+
+def add_receive_note(id,warehouse_id):
+    rn = ReceivedNote(id = id,warehouse_id=warehouse_id)
+
+    db.session.add(rn)
+
+    db.session.commit()
+
+
+
 
 
 def revenue_stats():

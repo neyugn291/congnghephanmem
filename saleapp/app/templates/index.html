@@ -37,17 +37,17 @@
 </div>
 
 
-{% if products %}
+{% if books %}
 <div class="row">
-    {% for p in products %}
+    {% for b in books %}
     <div class="col-md-3 col-12 p-4">
         <div class="card">
-            <img class="card-img-top" src="{{ p.image }}" alt="{{ p.name }}">
+            <img class="card-img-top" src="{{ b.image }}" alt="{{ b.name }}">
             <div class="card-body" >
-                <h4 class="card-title">{{ p.name }}</h4>
-                <p class="card-text">{{ p.price }} VNĐ</p>
-                <a href="#" class="btn btn-primary">Xem chi tiết</a>
-                <button class="btn btn-danger" onclick="addToCart({{ p.id }}, '{{ p.name }}', {{ p.price }})">Đặt hàng
+                <h4 class="card-title">{{ b.name }}</h4>
+                <p class="card-text">{{ b.price }} VNĐ</p>
+                <a href="/books/{{ b.id }}" class="btn btn-primary">Xem chi tiết</a>
+                <button class="btn btn-danger" onclick="addToCart({{ b.id }}, '{{ b.name }}', {{ b.price }})">Đặt hàng
                 </button>
             </div>
         </div>

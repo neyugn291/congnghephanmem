@@ -10,6 +10,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:%s@localhost/saled
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.config["PAGE_SIZE"] = 4
 
+
 db = SQLAlchemy(app)
 login = LoginManager(app)
 

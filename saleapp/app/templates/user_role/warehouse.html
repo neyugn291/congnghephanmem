@@ -20,12 +20,25 @@
     </tr>
     </thead>
     <tbody>
-    <tr>
+    <tr id="input-warehouse">
         <td class="text-center">1</td>
-        <td><input type="text" class="form-control" placeholder="Nhập tên"></td>
+        <td>
+            <div class="dropdown">
+                <input type="text" class="form-control dropdown-toggle" id="dropdownMenuButton"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false" placeholder="Nhập hoặc chọn"
+                       oninput="search(this.value)"/>
+
+                <ul class="dropdown-menu" id="inputDropdown" aria-labelledby="dropdownMenuButton">
+                    {% for n in names%}
+                    <li><a class="dropdown-item" onclick="getValue(this)">{{ n.name }}</a></li>
+                    {% endfor%}
+                </ul>
+            </div>
+        </td>
         <td></td>
         <td></td>
-        <td><input type="number" class="form-control" placeholder="Nhập tên"></td>
+        <td><input type="number" class="form-control"></td>
     </tr>
 
     </tbody>

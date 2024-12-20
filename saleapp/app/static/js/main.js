@@ -66,7 +66,7 @@ function changeQuantity(id) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            "id":id,
+            "id": id,
             "quantity": quantity
         }),
     }).then(response => response.json()).then(data => {
@@ -114,4 +114,46 @@ function pay() {
             }
         })
     }
+}
+
+function getValue(element) {
+    let inputName = document.getElementById('dropdownMenuButton');
+    let input = document.getElementById("input-warehouse");
+    inputName.value = element.textContent;
+
+    input.children[2].textContent = "";
+    input.children[3].innerHTML = "";
+
+}
+
+function search(value) {
+        let prods = document.querySelectorAll("#inputDropdown .dropdown-item")
+        for (p of prods) {
+            p.classList.add("none");
+
+            if(p.textContent.toLowerCase().startsWith(value.toLowerCase())) {
+                p.classList.remove("none");
+            }
+        }
+
+
+        // let results = prods.filter(p => p.name.toLowerCase().startsWith(value.toLowerCase()));
+        // let ulEle = document.getElementById("inputDropdown");
+        // console.log(results);
+        // for (r of results) {
+        //     let newLi = document.createElement("li");
+        //     let newA = document.createElement("a");
+        //
+        //     newA.classList.add("dropdown-item");
+        //
+        //     newA.innerHTML = r.name;
+        //
+        //     newA.setAttribute("onclick", "getValue(this)");
+        //
+        // // Thêm phần tử a vào phần tử li
+        //     newLi.appendChild(newA);
+        //
+        // // Thêm phần tử li vào phần tử dropdown (ví dụ, trong một menu)
+        //     ulEle.appendChild(newLi);
+        // }
 }

@@ -4,7 +4,7 @@
 
 <div class="row mt-2">
     <div class="col-md-5 col-6">
-        <img src="{{ product.image }}" class="img-fluid rounded" />
+        <img src="{{ book.image }}" class="img-fluid rounded" />
     </div>
     <div class="col-md-7 col-6">
         <h1>{{ book.name}}</h1>
@@ -20,7 +20,7 @@
     <button class="btn btn-success mt-1" onclick="addComment({{ book.id }})">Bình luận</button>
 </div>
 {% else %}
-<p>Vui lòng <a href="/login?next=/products/{{ book.id }}">đăng nhập</a> để bình luận!</p>
+<p>Vui lòng <a href="/login?next=/books/{{ book.id }}">đăng nhập</a> để bình luận!</p>
 {% endif %}
 
 <ul class="list-group mt-2" id="comments">
