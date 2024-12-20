@@ -3,13 +3,22 @@
 {% block content %}
 
 <div class="row mt-2">
-    <div class="col-md-5 col-6">
+    <div class="col-md-4 col-6">
         <img src="{{ book.image }}" class="img-fluid rounded" />
+        <button class="btn btn-success " onclick="addToCart({{ book.id }}, '{{ book.name }}', {{ book.price }})">Đặt hàng</button>
     </div>
-    <div class="col-md-7 col-6">
-        <h1>{{ book.name}}</h1>
-        <h3 class="text-danger">{{ book.price }} VNĐ</h3>
-        <button class="btn btn-success" onclick="addToCart({{ book.id }}, '{{ book.name }}', {{ book.price }})">Đặt hàng</button>
+    <div class="col-md-8 col-6">
+        <h1 class="text-center">{{ book.name }}</h1>
+        <h2 class="text-danger text-center">{{ book.price }} VNĐ</h2>
+        <div class="row">
+            <div class="col-6  text-center py-2">Tên Tác giả: </div>
+            <div class="col-6  text-center py-2">Thể loại: </div>
+        </div>
+        <div class="row">
+            <div class="col-6  text-center py-2">{{ book.author }}</div>
+            <div class="col-6  text-center py-2">{{ book.category.name }}</div>
+        </div>
+        <p class="text-break">{{ book.description }}</p>
     </div>
 </div>
 
@@ -28,17 +37,22 @@
   <li class="list-group-item">
 
       <div class="row">
-          <div class="col-md-1 col-6">
-              <img src="{{ c.user.avatar }}" class="img-fluid rounded-circle" />
+          <div class="col-md-2 col-6">
+              <img src="{{ c.user.avatar }}" class="img-fluid rounded-circle " />
           </div>
-          <div class="col-md-11 col-6">
-              <p>{{ c.content }}</p>
+          <div class="col-md-1"></div>
+          <div class="col-md-9 col-6">
+              <p class="fw-bold">{{ c.user.name }}</p>
+              <p class="text-break">{{ c.content }}</p>
               <p class="date">{{ c.created_date }}</p>
           </div>
       </div>
 
   </li>
     {% endfor %}
+
+
+
 </ul>
 
 <script>

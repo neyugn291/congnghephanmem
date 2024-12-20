@@ -30,9 +30,9 @@ def load_books(cate_id=None, kw=None, page=1, page_size = 0):
 
 
 
-
 def count_books():
     return Book.query.count()
+
 
 def get_category_by_id(id):
     return Category.query.get(id)
@@ -40,10 +40,9 @@ def get_category_by_id(id):
 def get_book_by_id(id):
     return Book.query.get(id)
 
+
 def get_user_by_id(id):
     return User.query.get(id)
-
-
 
 
 def auth_user(username, password, role=None):
@@ -110,14 +109,12 @@ def books_stats():
                 .join(Book, Book.category_id.__eq__(Category.id), isouter=True).group_by(Category.id).all()
 
 
-def get_book_by_id(id):
-    return Book.query.get(id)
-
 def load_comments(book_id):
     return Comment.query.filter(Comment.book_id.__eq__(book_id)).order_by(-Comment.id).all()
 
+
 def add_comment(content, book_id):
-    c = Comment(content=content, book_id=book_id, user=current_user)
+    c = Comment(content=content, book_id=book_id, user=current_user, created_date = datetime.now())
     db.session.add(c)
     db.session.commit()
 

@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, Boolean, null, DateTime
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, Boolean, null, DateTime, Text
 from app import db, app
 from enum import Enum as RoleEnum
 import hashlib
@@ -45,7 +45,7 @@ class User(db.Model, UserMixin):
 
 class Category(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50), nullable=False, unique=True)
+    name = Column(String(100), nullable=False, unique=True)
 
     books = relationship('Book', backref='category', lazy=True)
 
@@ -71,7 +71,7 @@ class Book(db.Model):
     author = Column(String(255), nullable=False, default="")
     price = Column(Float, default=0)
     image = Column(String(100), nullable=False, default="")
-    description = Column(String(255), nullable=True)
+    description = Column(Text, nullable=True)
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
 
     received_note_details = relationship('ReceivedNoteDetail', backref='book', lazy=True)
@@ -131,7 +131,7 @@ class ReceiptDetail(db.Model):
 
 class Comment(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    content = Column(String(255), nullable=False)
+    content = Column(Text, nullable=False)
     created_date = Column(DateTime, default=datetime.now())
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
     book_id = Column(Integer, ForeignKey(Book.id), nullable=False)

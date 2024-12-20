@@ -35,6 +35,7 @@ def add_comment(book_id):
         'content': c.content,
         'created_date': c.created_date,
         'user': {
+            'name': c.user.name,
             'avatar': c.user.avatar
         }
     }
@@ -161,9 +162,6 @@ def warehouse():
     kw = request.args.get('dropdownMenuButton')
     page_size = dao.count_books()
     name_books = dao.load_books(kw=kw, page_size=page_size)
-
-
-
     return render_template('user_role/warehouse.html', names=name_books, UserRole=UserRole)
 
 
@@ -176,18 +174,13 @@ def receive():
     author = str(request.json.get('author'))
     type = str(request.json.get('type'))
     name = str(request.json.get('name'))
-
-
-
     receive = {
-        "id":id,
+        "id": id,
         "name": name,
         "author": author,
         "type": type,
         "quantity": 150
     }
-
-
     session['receive'] = receive
     return jsonify(receive)
 
