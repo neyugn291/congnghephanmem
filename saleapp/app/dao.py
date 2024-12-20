@@ -34,9 +34,16 @@ def load_books(cate_id=None, kw=None, page=1, page_size = 0):
 def count_books():
     return Book.query.count()
 
+def get_category_by_id(id):
+    return Category.query.get(id)
+
+def get_book_by_id(id):
+    return Book.query.get(id)
 
 def get_user_by_id(id):
     return User.query.get(id)
+
+
 
 
 def auth_user(username, password, role=None):

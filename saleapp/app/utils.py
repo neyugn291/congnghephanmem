@@ -9,3 +9,11 @@ def stats_cart(cart):
         "total_amount": total_amount,
         "total_quantity": total_quantity
     }
+
+def to_dict(self):
+    return {
+        "id": self.id,
+        "name": self.name,
+        "author": self.author,
+        "category_id": self.category_id
+    }

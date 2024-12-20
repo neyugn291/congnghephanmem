@@ -18,13 +18,15 @@ def index():
 
     total = dao.count_books()
     page_size = app.config['PAGE_SIZE']
-    return render_template("index.html", books=books, pages=math.ceil(total/page_size), UserRole=UserRole)
+    return render_template("index.html", books=books, pages=math.ceil(total / page_size), UserRole=UserRole)
+
 
 @app.route('/books/<book_id>')
 def details(book_id):
     return render_template('details.html',
-                           book=dao.get_book_by_id(book_id),UserRole=UserRole,
+                           book=dao.get_book_by_id(book_id), UserRole=UserRole,
                            comments=dao.load_comments(book_id))
+
 
 @app.route('/api/books/<book_id>/comments', methods=['post'])
 def add_comment(book_id):
@@ -50,7 +52,7 @@ def login_process():
             next = request.args.get('next')
             return redirect(next if next else '/')
 
-    return render_template('login.html',UserRole=UserRole)
+    return render_template('login.html', UserRole=UserRole)
 
 
 @app.route('/login-admin', methods=['post'])
@@ -91,7 +93,6 @@ def register_process():
 
 @app.route('/api/carts', methods=['post'])
 def add_to_cart():
-
     cart = session.get('cart')
     if cart is None:
         cart = {}
@@ -112,20 +113,18 @@ def add_to_cart():
 
     session['cart'] = cart
 
-
     return jsonify(utils.stats_cart(cart))
+
 
 @app.route('/api/carts/<book_id>', methods=['delete'])
 def remove_from_cart(book_id):
-
-
     cart = session.get('cart', {})
 
     if id in cart:
         del cart[book_id]
 
     session['cart'] = cart
-        # total_quantity = sum(item['quantity'] for item in cart.values())
+    # total_quantity = sum(item['quantity'] for item in cart.values())
     return jsonify(utils.stats_cart(cart))
 
 
@@ -136,14 +135,13 @@ def update_quantity():
 
     cart = session.get('cart')
 
-
     cart[id]["quantity"] = data.get("quantity")
     session['cart'] = cart
     return jsonify(utils.stats_cart(cart))
 
+
 @app.route('/api/pay', methods=['post'])
 def pay():
-
     try:
         dao.add_receipt(session.get('cart'))
     except:
@@ -152,20 +150,51 @@ def pay():
         del session['cart']
         return jsonify({'status': 200})
 
+
 @app.route('/cart')
 def cart():
-    return render_template('cart.html',UserRole = UserRole)
+    return render_template('cart.html', UserRole=UserRole)
 
-@app.route('/warehouse',methods=['post','get'])
+
+@app.route('/warehouse', methods=['post', 'get'])
 def warehouse():
     kw = request.args.get('dropdownMenuButton')
     page_size = dao.count_books()
-    name_books = dao.load_books(kw = kw, page_size= page_size)
-    return render_template('user_role/warehouse.html',names = name_books,UserRole = UserRole)
+    name_books = dao.load_books(kw=kw, page_size=page_size)
 
-@app.route('/seller',methods=['post','get'])
+
+
+    return render_template('user_role/warehouse.html', names=name_books, UserRole=UserRole)
+
+
+@app.route('/api/receive', methods=['post'])
+def receive():
+    receive = session.get('receive')
+    if not receive:
+        receive = {}
+    id = request.json.get('id')
+    author = str(request.json.get('author'))
+    type = str(request.json.get('type'))
+    name = str(request.json.get('name'))
+
+
+
+    receive = {
+        "id":id,
+        "name": name,
+        "author": author,
+        "type": type,
+        "quantity": 150
+    }
+
+
+    session['receive'] = receive
+    return jsonify(receive)
+
+
+@app.route('/seller', methods=['post', 'get'])
 def seller():
-    return render_template('user_role/seller.html',UserRole = UserRole)
+    return render_template('user_role/seller.html', UserRole=UserRole)
 
 
 @app.context_processor
@@ -187,5 +216,5 @@ def get_user_by_id(user_id):
 if __name__ == '__main__':
     with app.app_context():
         from app import admin
-        app.run(debug=True)
 
+        app.run(debug=True)

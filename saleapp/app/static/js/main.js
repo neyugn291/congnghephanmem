@@ -37,19 +37,6 @@ function removeFromCart(id) {
     });
 }
 
-// function removeFromCart(productId) {
-//     if (confirm("Bạn chắc chắn xóa không?") === true) {
-//         fetch(`/api/carts/${productId}`, {
-//             method: "delete"
-//         }).then(res => res.json()).then(data => {
-//
-//
-//             document.getElementById(`cart${productId}`).style.display = "none";
-//             renderInfoCart(data);
-//         })
-//     }
-// }
-
 function changeQuantity(id) {
     let quantity = parseInt(document.querySelector(`#cart-id-${id} .quantity`).value);
 
@@ -70,21 +57,6 @@ function changeQuantity(id) {
             "quantity": quantity
         }),
     }).then(response => response.json()).then(data => {
-        renderInfoCart(data);
-    })
-}
-
-function updateCart(productId, obj) {
-    fetch(`/api/carts/${productId}`, {
-        method: "put",
-        body: JSON.stringify({
-            quantity: obj.value
-        }),
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).then(res => res.json()).then(data => {
-
         renderInfoCart(data);
     })
 }
@@ -116,47 +88,57 @@ function pay() {
     }
 }
 
-function getValue(element) {
-    let inputName = document.getElementById('dropdownMenuButton');
-    let input = document.getElementById("input-warehouse");
-    inputName.value = element.textContent;
-
-    input.children[2].textContent = "";
-    input.children[3].innerHTML = "";
-
-}
-
-function search(value) {
-        let prods = document.querySelectorAll("#inputDropdown .dropdown-item")
-        for (p of prods) {
-            p.classList.add("none");
-
-            if(p.textContent.toLowerCase().startsWith(value.toLowerCase())) {
-                p.classList.remove("none");
-            }
+// function addToReceiveNote(id,name,author,category_id) {
+//     fetch("/api/receive", {
+//         method: "POST",
+//         body: JSON.stringify({
+//             "id": id,
+//             "name": name,
+//             "author": author,
+//             "type": category_id,
+//         }),
+//         headers: {
+//             'Content-Type': 'application/json'
+//         }
+//     }).then(res => res.json()).then(data => {
+//         let input = document.getElementById("input-warehouse");
+//         input.children[2].textContent = data.author;
+//         input.children[3].textContent = data.type;
+//         let inputName = document.getElementById('dropdownMenuButton');
+//         inputName.value = data.name;
+//         console.log(data);
+//     });
+// }
+function addToReceiveNote(id, book_id, name, author, type) {
+    fetch("/api/receive", {
+        method: "POST",
+        body: JSON.stringify({
+            "id": id,
+            "book_id": book_id,
+            "name": name,
+            "author": author,
+            "type": type,
+        }),
+        headers: {
+            'Content-Type': 'application/json'
         }
+    })
+        .then(res => res.json())
+        .then(data => {
+            data.id -= 1;
+            let tbo = document.querySelector(`.input-${data.id}`);
+            console.log(data.id -1)
+            tbo.children[0].textContent = data.id;
+            tbo.children[2].textContent = data.type;
+            tbo.children[3].textContent = data.author;
+            tbo.children[4].value = parseInt(data.quantity, 10);
+            console.log(tbo);
 
-
-        // let results = prods.filter(p => p.name.toLowerCase().startsWith(value.toLowerCase()));
-        // let ulEle = document.getElementById("inputDropdown");
-        // console.log(results);
-        // for (r of results) {
-        //     let newLi = document.createElement("li");
-        //     let newA = document.createElement("a");
-        //
-        //     newA.classList.add("dropdown-item");
-        //
-        //     newA.innerHTML = r.name;
-        //
-        //     newA.setAttribute("onclick", "getValue(this)");
-        //
-        // // Thêm phần tử a vào phần tử li
-        //     newLi.appendChild(newA);
-        //
-        // // Thêm phần tử li vào phần tử dropdown (ví dụ, trong một menu)
-        //     ulEle.appendChild(newLi);
-        // }
+        })
 }
+
+
+
 
 function addComment(bookId) {
     fetch(`/api/books/${bookId}/comments`, {
@@ -168,16 +150,16 @@ function addComment(bookId) {
             "Content-Type": "application/json"
         }
     }).then(res => res.json()).then(c => {
-        let html =  `
+        let html = `
             <li class="list-group-item">
 
               <div class="row">
                   <div class="col-md-1 col-6">
-                      <img src="${ c.user.avatar }" class="img-fluid rounded-circle" />
+                      <img src="${c.user.avatar}" class="img-fluid rounded-circle" />
                   </div>
                   <div class="col-md-11 col-6">
-                      <p>${ c.content }</p>
-                      <p class="date">${ moment(c.created_date).locale("vi").fromNow() }</p>
+                      <p>${c.content}</p>
+                      <p class="date">${moment(c.created_date).locale("vi").fromNow()}</p>
                   </div>
               </div>
 
@@ -188,3 +170,53 @@ function addComment(bookId) {
         h.innerHTML = html + h.innerHTML;
     })
 }
+
+
+
+
+let row_id = 1;
+
+
+function renderRowInput() {
+    let tbody = document.querySelector("tbody");
+    let newTr = document.createElement("tr");
+    newTr.classList.add(`input-${row_id}`);  // Thêm class cho mỗi dòng mới
+    newTr.innerHTML = `
+        <td class="text-center">${row_id}</td>
+        <td>
+            <div class="container">
+                <input class="form-control search-input" list="suggestions" placeholder="Nhập từ khóa..." />
+            </div>
+        </td>
+        <td></td>
+        <td></td>
+        <td><input type="number" class="form-control"></td>
+    `;
+
+    // Lựa chọn trường tìm kiếm duy nhất với class "search-input"
+    let searchInput = newTr.querySelector(".search-input");
+
+    // Thêm sự kiện "input" vào trường tìm kiếm
+    searchInput.addEventListener("input", function (event) {
+        let input = event.target;
+        let selectedOption = Array.from(document.querySelectorAll("#suggestions option")).find(option => option.value === input.value);
+
+        if (selectedOption) {
+            let book_id = selectedOption.getAttribute("data-id");
+            let name = selectedOption.value;
+            let author = selectedOption.getAttribute("data-author");
+            let type = selectedOption.getAttribute("data-type");
+
+            // Gọi hàm addToReceiveNote với các tham số đã chọn
+            addToReceiveNote(row_id, book_id, name, author, type);
+        }
+    });
+
+    // Thêm dòng mới vào tbody
+    tbody.appendChild(newTr);
+
+    // Tăng giá trị row_id sau mỗi lần gọi
+    row_id++;
+}
+
+
