@@ -1,0 +1,20 @@
+.btn {
+    background-color: var(--navy-color);
+    color: var(--white-color);
+}
+
+#comment {
+    background-color: var(--beige-color);
+}
+
+.list-group-item {
+    background-color: var(--beige-color);
+}
+
+h1{
+    color: var(--navy-color);
+}
+
+.info-book {
+    color: black;
+}

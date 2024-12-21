@@ -1,22 +1,22 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/details.css') }}"/>
 <div class="row mt-2">
     <div class="col-md-4 col-6">
         <img src="{{ book.image }}" class="img-fluid rounded" />
-        <button class="btn btn-success " onclick="addToCart({{ book.id }}, '{{ book.name }}', {{ book.price }})">Đặt hàng</button>
+        <button class="btn" onclick="addToCart({{ book.id }}, '{{ book.name }}', {{ book.price }})">Đặt hàng</button>
     </div>
-    <div class="col-md-8 col-6">
+    <div class="col-md-8 col-6 info-book">
         <h1 class="text-center">{{ book.name }}</h1>
-        <h2 class="text-danger text-center">{{ book.price }} VNĐ</h2>
+        <h2 class="text-center">{{ book.price }} VNĐ</h2>
         <div class="row">
-            <div class="col-6  text-center py-2">Tên Tác giả: </div>
-            <div class="col-6  text-center py-2">Thể loại: </div>
+            <div class="col-3  text-center py-2">Tên Tác giả: </div>
+            <div class="col-3  text-center py-2">{{ book.author }}</div>
         </div>
         <div class="row">
-            <div class="col-6  text-center py-2">{{ book.author }}</div>
-            <div class="col-6  text-center py-2">{{ book.category.name }}</div>
+            <div class="col-3  text-center py-2">Thể loại: </div>
+            <div class="col-3  text-center py-2">{{ book.category.name }}</div>
         </div>
         <p class="text-break">{{ book.description }}</p>
     </div>
@@ -34,11 +34,11 @@
 
 <ul class="list-group mt-2" id="comments">
     {% for c in comments %}
-  <li class="list-group-item">
+  <li class="list-group-item mb-5">
 
       <div class="row">
           <div class="col-md-2 col-6">
-              <img src="{{ c.user.avatar }}" class="img-fluid rounded-circle " />
+              <img src="{{ c.user.avatar }}" class="img-fluid rounded-circle" />
           </div>
           <div class="col-md-1"></div>
           <div class="col-md-9 col-6">

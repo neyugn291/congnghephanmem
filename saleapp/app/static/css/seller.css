@@ -2,7 +2,17 @@
     min-height: 50vh;
 
 }
+/*.table {*/
+/*    background-color: var(--navy-color);*/
+/*}*/
+table.table-custom {
+    border-color: var(--blue-color) !important;
+    border-width: 10px !important;
+}
 
-table {
+.table tr *{
+    color: var(--navy-color);
+    font-weight: bold;
+    background-color: var(--beige-color);
 
 }

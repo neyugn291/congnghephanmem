@@ -67,9 +67,9 @@ def add_user(name, username, password, avatar=None):
     db.session.add(u)
     db.session.commit()
 
-def add_receipt(cart):
+def add_receipt_online(cart):
     if cart:
-        r = Receipt(customer=current_user)
+        r = Receipt(customer=current_user, received_day = func.now())
 
         db.session.add(r)
 
@@ -80,6 +80,24 @@ def add_receipt(cart):
 
         db.session.commit()
 
+def add_receipt_sell(receipts):
+    if receipts:
+
+        rec = Receipt(seller = current_user, created_date = func.now(), customer_id=1)
+
+        print(receipts)
+        print(receipts.values())
+        db.session.add(rec)
+        #db.session.commit()
+
+        for r in receipts.values():
+            print(type(r['book_id']),type(r['quantity']),type(r['id']),type(r['price']))
+            rd = ReceiptDetail(receipt=rec , book_id=int(r['book_id']), quantity=r['quantity'], price=float(r['price']))
+
+            db.session.add(rd)
+
+    db.session.commit()
+
 
 def add_receive_note(receives):
     if receives:
@@ -89,11 +107,11 @@ def add_receive_note(receives):
         print(receives)
         print(receives.values())
         db.session.add(rn)
-        db.session.commit()
+        #db.session.commit()
 
         for r in receives.values():
             print(type(r['book_id']),type(r['quantity']),type(rn.id))
-            rnd = ReceivedNoteDetail(note_id = int(rn.id),book_id=int(r['book_id']),quantity=r['quantity'])
+            rnd = ReceivedNoteDetail(received_note=rn ,book_id=int(r['book_id']),quantity=r['quantity'])
 
             db.session.add(rnd)
 

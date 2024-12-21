@@ -6,7 +6,7 @@ import dao, utils
 from app import app, login
 from flask_login import login_user, logout_user
 from app.models import UserRole
-
+from datetime import datetime
 
 @app.route("/")
 def index():
@@ -117,13 +117,14 @@ def add_to_cart():
     return jsonify(utils.stats_cart(cart))
 
 
-@app.route('/api/carts/<book_id>', methods=['delete'])
-def remove_from_cart(book_id):
+@app.route('/api/carts', methods=['delete'])
+def remove_from_cart():
     cart = session.get('cart', {})
-
+    id = str(request.json.get('id'))
+    print(id)
     if id in cart:
-        del cart[book_id]
-
+        del cart[id]
+    print(cart)
     session['cart'] = cart
     # total_quantity = sum(item['quantity'] for item in cart.values())
     return jsonify(utils.stats_cart(cart))
@@ -144,7 +145,7 @@ def update_quantity():
 @app.route('/api/pay', methods=['post'])
 def pay():
     try:
-        dao.add_receipt(session.get('cart'))
+        dao.add_receipt_online(session.get('cart'))
     except:
         return jsonify({'status': 500})
     else:
@@ -162,15 +163,17 @@ def warehouse():
     kw = request.args.get('dropdownMenuButton')
     page_size = dao.count_books()
     name_books = dao.load_books(kw=kw, page_size=page_size)
-    return render_template('user_role/warehouse.html', names=name_books, UserRole=UserRole)
+    current_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
+    return render_template('user_role/warehouse.html',
+                           current=current_time,
+                           names=name_books,
+                           UserRole=UserRole)
 
 
 @app.route('/receive', methods=['post'])
 def receive():
     receives = session.get('receives', {})
-    receive = session.get('receive')
-    if not receive:
-        receive = {}
+    receive = session.get('receive', {})
     id = str(request.json.get('id'))
     book_id = str(request.json.get('book_id'))
     author = str(request.json.get('author'))
@@ -198,6 +201,8 @@ def receive():
 
 @app.route('/api/receive', methods=['post'])
 def input():
+    # dao.add_receive_note(session.get('receives'))
+    # return jsonify({'status': 500})
     try:
         dao.add_receive_note(session.get('receives'))
     except:
@@ -209,7 +214,53 @@ def input():
 
 @app.route('/seller', methods=['post', 'get'])
 def seller():
-    return render_template('user_role/seller.html', UserRole=UserRole)
+    kw = request.args.get('dropdownMenuButton')
+    page_size = dao.count_books()
+    name_books = dao.load_books(kw=kw, page_size=page_size)
+    current_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
+    return render_template('user_role/seller.html',
+                           current=current_time,
+                           names=name_books,
+                           UserRole=UserRole)
+
+@app.route('/receipt_sell', methods=['post'])
+def sell():
+    receipts = session.get('receipts', {})
+    receipt = session.get('receipt', {})
+    id = str(request.json.get('id'))
+    book_id = str(request.json.get('book_id'))
+    price = str(request.json.get('price'))
+    type = str(request.json.get('type'))
+    name = str(request.json.get('name'))
+
+    receipt = {
+        "id": id,
+        "book_id": book_id,
+        "name": name,
+        "price": price,
+        "type": type,
+        "quantity": 150
+    }
+
+    session['receipt'] = receipt
+    # Lưu lại dictionary receipts vào session
+    receipts[id] = receipt
+    session['receipts'] = receipts
+
+    # Trả về danh sách receipts
+    return jsonify({"receipt":receipt,"receipts": receipts})
+
+@app.route('/api/receipt_sell', methods=['post'])
+def save_receipt_sell():
+    # dao.add_receipt_sell(session.get('receipts'))
+    # return jsonify({'status': 500})
+    try:
+        dao.add_receipt_sell(session.get('receipts'))
+    except:
+        return jsonify({'status': 500})
+    else:
+        session['receipts'] = {}
+        return jsonify({'status': 200})
 
 
 @app.context_processor

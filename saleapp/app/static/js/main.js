@@ -27,13 +27,11 @@ function removeFromCart(id) {
             'Content-Type': 'application/json'
         }
     }).then(res => res.json()).then(data => {
-
-
+        console.log(data)
         let selectedItem = document.getElementById("cart-id-" + id);
         if (selectedItem) {
             selectedItem.remove(); //xoa item da chon
         }
-
         renderInfoCart(data)
     });
 }
@@ -89,6 +87,20 @@ function pay() {
     }
 }
 
+function addComment(bookId) {
+    fetch(`/api/books/${bookId}/comments`, {
+        method: "post",
+        body: JSON.stringify({
+            'content': document.getElementById("comment").value
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(res => res.json()).then(c => {
+        location.reload();
+    })
+}
+
 function inputFormReceive() {
     if (confirm("Bạn chắc chắn nhập sách không?") === true) {
         fetch('/api/receive', {
@@ -99,7 +111,7 @@ function inputFormReceive() {
                 alert("Nhập sách thành công!");
                 console.log(data)
                 location.reload();
-                let tr = document.querySelector("tbody.warehouse").classList.add('none');
+                //let tr = document.querySelector("tbody.warehouse").classList.add('none');
             }
         })
     }
@@ -123,7 +135,7 @@ function addToReceiveNote(id, book_id, name, author, type) {
         .then(data => {
             console.log(data);
             let tbo = document.querySelector(`.input-${data['receive'].id}`);
-            console.log(tbo)
+            //console.log(tbo)
             tbo.children[0].textContent = data['receive'].id;
             tbo.children[2].textContent = data['receive'].type;
             tbo.children[3].textContent = data['receive'].author;
@@ -131,28 +143,15 @@ function addToReceiveNote(id, book_id, name, author, type) {
         })
 }
 
-function addComment(bookId) {
-    fetch(`/api/books/${bookId}/comments`, {
-        method: "post",
-        body: JSON.stringify({
-            'content': document.getElementById("comment").value
-        }),
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).then(res => res.json()).then(c => {
-        location.reload();
-    })
-}
+let row_id_warehouse = 0;
 
-let row_id = 1;
-
-function renderRowInput() {
+function renderRowInputWareHouse() {
+    row_id_warehouse++;
     let tbody = document.querySelector("tbody");
     let newTr = document.createElement("tr");
-    newTr.classList.add(`input-${row_id}`);  // Thêm class cho mỗi dòng mới
+    newTr.classList.add(`input-${row_id_warehouse}`);  // Thêm class cho mỗi dòng mới
     newTr.innerHTML = `
-        <td class="text-center">${row_id}</td>
+        <td class="text-center">${row_id_warehouse}</td>
         <td>
             <div class="container">
                 <input class="form-control search-input" list="suggestions" placeholder="Nhập từ khóa..." />
@@ -178,16 +177,99 @@ function renderRowInput() {
             let type = selectedOption.getAttribute("data-type");
 
             // Gọi hàm addToReceiveNote với các tham số đã chọn
-            addToReceiveNote(row_id, book_id, name, author, type);
-            row_id++;
+            addToReceiveNote(row_id_warehouse, book_id, name, author, type);
+
         }
     });
 
     // Thêm dòng mới vào tbody
     tbody.appendChild(newTr);
-
-    // Tăng giá trị row_id sau mỗi lần gọi
-
+    // Tăng giá trị row_id_warehouse sau mỗi lần gọi
 }
 
+//SELLER
+let row_id_seller = 0;
+
+function renderRowInputSeller() {
+    row_id_seller++;
+    let tbody = document.querySelector("tbody");
+    let newTr = document.createElement("tr");
+    newTr.classList.add(`input-${row_id_seller}`);  // Thêm class cho mỗi dòng mới
+    newTr.innerHTML = `
+        <td class="text-center">${row_id_seller}</td>
+        <td>
+            <div class="container">
+                <input class="form-control search-input" list="suggestions" placeholder="Nhập từ khóa..." />
+            </div>
+        </td>
+        <td></td>
+        <td><input type="number" class="form-control"></td>
+        <td></td>
+    `;
+
+    // Lựa chọn trường tìm kiếm duy nhất với class "search-input"
+    let searchInput = newTr.querySelector(".search-input");
+
+    // Thêm sự kiện "input" vào trường tìm kiếm
+    searchInput.addEventListener("input", function (event) {
+        let input = event.target;
+        let selectedOption = Array.from(document.querySelectorAll("#suggestions option")).find(option => option.value === input.value);
+
+        if (selectedOption) {
+            let book_id = selectedOption.getAttribute("data-id");
+            let name = selectedOption.value;
+            let price = selectedOption.getAttribute("data-price");
+            let type = selectedOption.getAttribute("data-type");
+
+            // Gọi hàm addToReceiveNote với các tham số đã chọn
+            addToReceipt(row_id_seller, book_id, name, price, type);
+
+        }
+    });
+    // Thêm dòng mới vào tbody
+    tbody.appendChild(newTr);
+    // Tăng giá trị row_id_seller sau mỗi lần gọi
+}
+
+function addToReceipt(id, book_id, name, price, type) {
+    fetch("/receipt_sell", {
+        method: "POST",
+        body: JSON.stringify({
+            "id": id,
+            "book_id": book_id,
+            "name": name,
+            "price": price,
+            "type": type,
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+            let tbo = document.querySelector(`.input-${data['receipt'].id}`);
+            //console.log(tbo)
+            tbo.children[0].textContent = data['receipt'].id;
+            tbo.children[2].textContent = data['receipt'].type;
+            tbo.children[3].value = parseInt(data['receipt'].quantity, 10);
+            tbo.children[4].textContent = Number(data['receipt'].price).toLocaleString() + " VND";
+        })
+}
+
+function inputFormReceipt() {
+    if (confirm("Bạn chắc chắn nhập sách không?") === true) {
+        fetch('/api/receipt_sell', {
+            method: 'post'
+        }).then(res => res.json()).then(data => {
+            console.log(data)
+            if (data.status === 200) {
+                alert("Nhập sách thành công!");
+                console.log(data)
+                location.reload();
+                //let tr = document.querySelector("tbody.warehouse").classList.add('none');
+            }
+        })
+    }
+}
 

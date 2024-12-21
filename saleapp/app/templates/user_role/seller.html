@@ -3,54 +3,34 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/seller.css') }}"/>
 {% if current_user.is_authenticated %}
-    <table class="table table-bordered">
-
-
+<table class="table table-bordered table-custom">
     <thead>
     <tr>
-        <th class="text-center fs-2" colspan="6">Hoa don</th>
+        <th class="text-center fs-2" colspan="5">Hóa đơn</th>
     </tr>
     <tr>
-        <th class="text-left" colspan="3">Ten khach hang:</th>
-        <th class="text-left" colspan="3">Ngay nhap:</th>
+        <th class="text-center" colspan="5">Ngày lập hóa đơn: {{ current }}</th>
     </tr>
-
     <tr>
         <th class="text-center col-1">STT</th>
-        <th class="text-center">Sach</th>
-        <th class="text-center col-2" colspan="2">The Loai</th>
-        <th class="text-center col-1">So Luong</th>
-        <th class="text-center col-2">Don gia</th>
+        <th class="text-center">Sách</th>
+        <th class="text-center col-2">Thể loại</th>
+        <th class="text-center col-2">Số lượng</th>
+        <th class="text-center col-2">Đơn giá</th>
     </tr>
-
     </thead>
+    <datalist id="suggestions">
+        {% for n in names %}
+            <option value="{{ n.name }}" data-id="{{ n.id }}" data-price="{{ n.price }}" data-type="{{ n.category.name }}">
+        {% endfor %}
+    </datalist>
     <tbody>
-    <tr>
-        <td class="text-center">1</td>
-        <td><input type="text" class="form-control" placeholder="Nhập tên"></td>
-        <td colspan="2"><input type="text" class="form-control" placeholder="Nhập tên"></td>
-        <td><input type="text" class="form-control" placeholder="Nhập tên"></td>
-        <td><input type="text" class="form-control" placeholder="Nhập tên"></td>
-    </tr>
-    <tr>
-        <td class="text-center">2</td>
-        <td><input type="email" class="form-control" placeholder="Nhập email"></td>
-        <td colspan="2"><input type="text" class="form-control" placeholder="Nhập tên"></td>
-        <td><input type="text" class="form-control" placeholder="Nhập tên"></td>
-        <td><input type="text" class="form-control" placeholder="Nhập tên"></td>
-    </tr>
-    <tr>
-        <td class="text-center">3</td>
-        <td><input type="password" class="form-control" placeholder="Nhập mật khẩu"></td>
-        <td colspan="2"><input type="text" class="form-control" placeholder="Nhập tên"></td>
-        <td><input type="text" class="form-control" placeholder="Nhập tên"></td>
-        <td><input type="text" class="form-control" placeholder="Nhập tên"></td>
-    </tr>
-    <tr>
-        <th class="text-left" colspan="6">Ten nhan vien</th>
-    </tr>
+
+
     </tbody>
 </table>
-<button type="submit" class="btn btn-success mt-3">Gửi</button>
+<button class="btn btn-success mt-3" onclick="renderRowInputSeller()">Thêm</button>
+<button type="submit" class="btn btn-success mt-3" onclick="inputFormReceipt()">Gửi</button>
+
 {% endif %}
 {% endblock %}

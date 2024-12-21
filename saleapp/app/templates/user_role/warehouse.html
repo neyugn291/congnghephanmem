@@ -7,17 +7,17 @@
 <table class="table table-bordered table-custom">
     <thead>
     <tr>
-        <th class="text-center fs-2" colspan="5">Phieu nhap sach</th>
+        <th class="text-center fs-2" colspan="5">Phiếu nhập sách</th>
     </tr>
     <tr>
-        <th class="text-center" colspan="5">Ngay nhap:</th>
+        <th class="text-center" colspan="5">Ngày nhập: {{ current }}</th>
     </tr>
     <tr>
         <th class="text-center col-1">STT</th>
-        <th class="text-center">Sach</th>
-        <th class="text-center col-2">The Loai</th>
-        <th class="text-center col-2">Tac gia</th>
-        <th class="text-center col-1">So luong</th>
+        <th class="text-center">Sách</th>
+        <th class="text-center col-2">Thể loại</th>
+        <th class="text-center col-2">Tác giả</th>
+        <th class="text-center col-2">Số lượng</th>
     </tr>
     </thead>
     <datalist id="suggestions">
@@ -30,7 +30,7 @@
 
     </tbody>
 </table>
-<button class="btn btn-success mt-3" onclick="renderRowInput()">Thêm</button>
+<button class="btn btn-success mt-3" onclick="renderRowInputWareHouse()">Thêm</button>
 <button type="submit" class="btn btn-success mt-3" onclick="inputFormReceive()">Gửi</button>
 
 {% endif %}
