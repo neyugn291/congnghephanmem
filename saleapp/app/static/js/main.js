@@ -89,29 +89,24 @@ function pay() {
     }
 }
 
-// function addToReceiveNote(id,name,author,category_id) {
-//     fetch("/api/receive", {
-//         method: "POST",
-//         body: JSON.stringify({
-//             "id": id,
-//             "name": name,
-//             "author": author,
-//             "type": category_id,
-//         }),
-//         headers: {
-//             'Content-Type': 'application/json'
-//         }
-//     }).then(res => res.json()).then(data => {
-//         let input = document.getElementById("input-warehouse");
-//         input.children[2].textContent = data.author;
-//         input.children[3].textContent = data.type;
-//         let inputName = document.getElementById('dropdownMenuButton');
-//         inputName.value = data.name;
-//         console.log(data);
-//     });
-// }
+function inputFormReceive() {
+    if (confirm("Bạn chắc chắn nhập sách không?") === true) {
+        fetch('/api/receive', {
+            method: 'post'
+        }).then(res => res.json()).then(data => {
+            console.log(data)
+            if (data.status === 200) {
+                alert("Nhập sách thành công!");
+                console.log(data)
+                location.reload();
+                let tr = document.querySelector("tbody.warehouse").classList.add('none');
+            }
+        })
+    }
+}
+
 function addToReceiveNote(id, book_id, name, author, type) {
-    fetch("/api/receive", {
+    fetch("/receive", {
         method: "POST",
         body: JSON.stringify({
             "id": id,
@@ -126,20 +121,15 @@ function addToReceiveNote(id, book_id, name, author, type) {
     })
         .then(res => res.json())
         .then(data => {
-            data.id -= 1;
-            let tbo = document.querySelector(`.input-${data.id}`);
-            console.log(data.id -1)
-            tbo.children[0].textContent = data.id;
-            tbo.children[2].textContent = data.type;
-            tbo.children[3].textContent = data.author;
-            tbo.children[4].value = parseInt(data.quantity, 10);
-            console.log(tbo);
-
+            console.log(data);
+            let tbo = document.querySelector(`.input-${data['receive'].id}`);
+            console.log(tbo)
+            tbo.children[0].textContent = data['receive'].id;
+            tbo.children[2].textContent = data['receive'].type;
+            tbo.children[3].textContent = data['receive'].author;
+            tbo.children[4].value = parseInt(data['receive'].quantity, 10);
         })
 }
-
-
-
 
 function addComment(bookId) {
     fetch(`/api/books/${bookId}/comments`, {
@@ -151,34 +141,11 @@ function addComment(bookId) {
             "Content-Type": "application/json"
         }
     }).then(res => res.json()).then(c => {
-//        let html =  `
-//            <li class="list-group-item">
-//
-//              <div class="row">
-//                  <div class="col-md-1 col-6">
-//                      <img src="${ c.user.avatar }" class="img-fluid rounded-circle" />
-//                  </div>
-//                  <div class="col-md-1"></div>
-//                  <div class="col-md-10 col-6">
-//                      <p>${ c.user.name }</p>
-//                      <p>${ c.content }</p>
-//                      <p class="date">${ c.created_date }</p>
-//                  </div>
-//              </div>
-//
-//          </li>
-//        `;
-//        let h = document.getElementById("comments");
-//        h.innerHTML = html + h.innerHTML;
         location.reload();
     })
 }
 
-
-
-
 let row_id = 1;
-
 
 function renderRowInput() {
     let tbody = document.querySelector("tbody");
@@ -212,6 +179,7 @@ function renderRowInput() {
 
             // Gọi hàm addToReceiveNote với các tham số đã chọn
             addToReceiveNote(row_id, book_id, name, author, type);
+            row_id++;
         }
     });
 
@@ -219,5 +187,7 @@ function renderRowInput() {
     tbody.appendChild(newTr);
 
     // Tăng giá trị row_id sau mỗi lần gọi
-    row_id++;
+
 }
+
+

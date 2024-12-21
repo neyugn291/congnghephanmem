@@ -1,4 +1,4 @@
-from app.models import Category, Book, User, UserRole, Receipt, ReceiptDetail, ReceivedNote, Comment
+from app.models import Category, Book, User, UserRole, Receipt, ReceiptDetail, ReceivedNote, Comment, ReceivedNoteDetail
 from app import app, db
 import hashlib
 import cloudinary.uploader
@@ -80,15 +80,24 @@ def add_receipt(cart):
 
         db.session.commit()
 
-def add_receive_note(id,warehouse_id):
-    rn = ReceivedNote(id = id,warehouse_id=warehouse_id)
 
-    db.session.add(rn)
+def add_receive_note(receives):
+    if receives:
+
+        rn = ReceivedNote(warehouse_id = current_user.id, received_day = func.now())
+
+        print(receives)
+        print(receives.values())
+        db.session.add(rn)
+        db.session.commit()
+
+        for r in receives.values():
+            print(type(r['book_id']),type(r['quantity']),type(rn.id))
+            rnd = ReceivedNoteDetail(note_id = int(rn.id),book_id=int(r['book_id']),quantity=r['quantity'])
+
+            db.session.add(rnd)
 
     db.session.commit()
-
-
-
 
 
 def revenue_stats():

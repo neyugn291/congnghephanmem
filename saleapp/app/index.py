@@ -165,24 +165,46 @@ def warehouse():
     return render_template('user_role/warehouse.html', names=name_books, UserRole=UserRole)
 
 
-@app.route('/api/receive', methods=['post'])
+@app.route('/receive', methods=['post'])
 def receive():
+    receives = session.get('receives', {})
     receive = session.get('receive')
     if not receive:
         receive = {}
-    id = request.json.get('id')
+    id = str(request.json.get('id'))
+    book_id = str(request.json.get('book_id'))
     author = str(request.json.get('author'))
     type = str(request.json.get('type'))
     name = str(request.json.get('name'))
+
     receive = {
         "id": id,
+        "book_id": book_id,
         "name": name,
         "author": author,
         "type": type,
         "quantity": 150
     }
+
+
+
     session['receive'] = receive
-    return jsonify(receive)
+    # Lưu lại dictionary receives vào session
+    receives[id] = receive
+    session['receives'] = receives
+
+    # Trả về danh sách receives
+    return jsonify({"receive":receive,"receives": receives})
+
+@app.route('/api/receive', methods=['post'])
+def input():
+    try:
+        dao.add_receive_note(session.get('receives'))
+    except:
+        return jsonify({'status': 500})
+    else:
+        session['receives'] = {}
+        return jsonify({'status': 200})
 
 
 @app.route('/seller', methods=['post', 'get'])
