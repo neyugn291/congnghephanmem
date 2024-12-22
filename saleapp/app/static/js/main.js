@@ -273,3 +273,9 @@ function inputFormReceipt() {
     }
 }
 
+function goToPay() {
+    if (confirm("Bạn chắc chắn thanh toán không?") === true) {
+        window.location.href = "/payment"
+    }
+}
+

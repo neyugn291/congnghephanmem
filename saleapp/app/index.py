@@ -153,6 +153,11 @@ def pay():
         return jsonify({'status': 200})
 
 
+@app.route('/payment', methods=['get', 'post'])
+def payment():
+    return render_template('payment.html')
+
+
 @app.route('/cart')
 def cart():
     return render_template('cart.html', UserRole=UserRole)
