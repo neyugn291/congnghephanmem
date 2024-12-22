@@ -258,13 +258,13 @@ function addToReceipt(id, book_id, name, price, type) {
 }
 
 function inputFormReceipt() {
-    if (confirm("Bạn chắc chắn nhập sách không?") === true) {
+    if (confirm("Bạn chắc chắn thanh toán không?") === true) {
         fetch('/api/receipt_sell', {
             method: 'post'
         }).then(res => res.json()).then(data => {
             console.log(data)
             if (data.status === 200) {
-                alert("Nhập sách thành công!");
+                alert("Thanh toán thành công!");
                 console.log(data)
                 location.reload();
                 //let tr = document.querySelector("tbody.warehouse").classList.add('none');
