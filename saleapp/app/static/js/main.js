@@ -252,6 +252,7 @@ function addToReceipt(id, book_id, name, price, type) {
             //console.log(tbo)
             tbo.children[0].textContent = data['receipt'].id;
             tbo.children[2].textContent = data['receipt'].type;
+            tbo.children[3].getAttribute('')
             tbo.children[3].value = parseInt(data['receipt'].quantity, 10);
             tbo.children[4].textContent = Number(data['receipt'].price).toLocaleString() + " VND";
         })

@@ -1,9 +1,28 @@
 .container {
-    background-image: url("https://res.cloudinary.com/dzbkb9zaz/image/upload/v1733805811/booktech_t7ri49.png");
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center center;
-    min-height: 100vh;
-    background-color: #e7e3dd;
+    background-color: #B59F78;
+    min-height: 50vh;
 }
 
+body {
+    background-color: #FAF6E3;
+}
+.table-responsive {
+    background-color: #D8DBBD;
+}
+tr {
+    border: #213555 !important;
+}
+ul.nav-tabs {
+    background-color: #D8DBBD;
+
+}
+.navbar {
+    background-color: #213555 !important;
+}
+* {
+  font-family: "Libre Bodoni", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+    font-size: 18px;
+  font-style: normal;
+}

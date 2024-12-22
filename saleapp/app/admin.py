@@ -11,17 +11,22 @@ from app import app, db, dao
 class MyAdminIndexView(AdminIndexView):
     @expose('/')
     def index(self):
-        return self.render('admin/index.html', stats=dao.books_stats())
+        return self.render('admin/index.html', stats=dao.books_stats(), UserRole=UserRole)
 
 admin = Admin(app=app, name='Book Store Admin', template_mode='bootstrap4', index_view=MyAdminIndexView())
 
-class AdminView(ModelView):
+class CustomModelView(ModelView):
+    extra_css = ['/static/css/custom_admin.css']
+    extra_js = ['/custom.js']
+
+class AdminView(CustomModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role == UserRole.ADMIN
 
 
 class CategoryView(AdminView):
     column_list = ['name', 'books']
+    page_size = 5
 
 
 

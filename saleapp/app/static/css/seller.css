@@ -8,7 +8,6 @@
 table.table-custom {
     border-color: var(--blue-color) !important;
     border-width: 10px !important;
-
 }
 
 .table tr *{
