@@ -31,10 +31,23 @@
     <h3>Tổng sản phẩm: {{ cart_stats.total_quantity }}</h3>
     <h3>Tổng tiền: {{ "{:,.0f}".format(cart_stats.total_amount) }}VNĐ</h3>
 </div>
+ <h5 class="mt-4">Phương Thức Thanh Toán</h5>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" checked="True" name="paymentMethod" id="bankTransfer" value="bankTransfer">
+            <label class="form-check-label" for="bankTransfer">
+                Chuyển khoản ngân hàng
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentMethod" id="cash" value="cash">
+            <label class="form-check-label" for="cash">
+                Thanh toán trực tiếp
+            </label>
+        </div>
 
 {% if current_user.is_authenticated %}
 <div>
-    <button class="btn btn-success" onclick="goToPay()">Thanh toán</button>
+    <button class="btn btn-success" onclick="selectPay()">Thanh toán</button>
 </div>
 {% else %}
 <p>Vui lòng <a href="/login?next=/cart">đăng nhập</a> để thanh toán!</p>

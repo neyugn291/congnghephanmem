@@ -91,6 +91,9 @@ def register_process():
 
     return render_template('register.html', err_msg=err_msg)
 
+@app.route('/cart', methods=['post'])
+def cart_process():
+    return render_template('/cart.html')
 
 @app.route('/api/carts', methods=['post'])
 def add_to_cart():
@@ -151,12 +154,6 @@ def pay():
     else:
         del session['cart']
         return jsonify({'status': 200})
-
-
-@app.route('/payment', methods=['get', 'post'])
-def payment():
-    return render_template('payment.html')
-
 
 @app.route('/cart')
 def cart():

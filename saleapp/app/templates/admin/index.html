@@ -3,9 +3,11 @@
 {% block body %}
 {% if current_user.is_authenticated %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/custom_admin.css') }}">
+
 <div class="row">
     <div class="col-md-7 col-12">
-        <table class="table">
+        <div class="content">
+        <table class="table table-striped">
             <tr>
                 <th>Id</th>
                 <th>Tên danh  mục</th>
@@ -20,6 +22,7 @@
             {% endfor %}
         </table>
     </div>
+     </div>
     <div class="col-md-5 col-12">
          <canvas id="myChart"></canvas>
     </div>
@@ -68,6 +71,7 @@
             });
     }
 </script>
+
 {% else %}
   <h1 class="text-center text-success mt-1">ĐĂNG NHẬP QUẢN TRỊ</h1>
 <form method="post" action="/login-admin">

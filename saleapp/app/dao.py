@@ -69,11 +69,14 @@ def add_user(name, username, password, avatar=None):
 
 def add_receipt_online(cart):
     if cart:
-        r = Receipt(customer=current_user, received_day = func.now())
+        print(cart, "vcl")
+        print(current_user)
+        r = Receipt(customer=current_user)
 
         db.session.add(r)
-
+        print(cart.values())
         for c in cart.values():
+
             d = ReceiptDetail(quantity=c['quantity'], price=c['price'],
                                receipt=r, book_id=c['id'])
             db.session.add(d)

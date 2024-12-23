@@ -73,17 +73,21 @@ function renderInfoCart(data) {
     info[1].textContent = "Tổng tiền: " + formattedTotalAmount + "VNĐ";
 }
 
-function pay() {
+function pay(cart) {
     if (confirm("Bạn chắc chắn thanh toán không?") === true) {
         fetch('/api/pay', {
-            method: 'post'
+            method: 'post',
+            body: {
+                "cart": cart
+            }
         }).then(res => res.json()).then(data => {
             console.log(data)
             if (data.status === 200) {
                 alert("Thanh toán thành công!");
-                location.reload();
+                window.location.href = "/cart";  // Chuyển hướng đến trang cart
+                window.location.reload();
             }
-        })
+        });
     }
 }
 
@@ -274,9 +278,15 @@ function inputFormReceipt() {
     }
 }
 
-function goToPay() {
-    if (confirm("Bạn chắc chắn thanh toán không?") === true) {
-        window.location.href = "/payment"
-    }
-}
 
+
+function selectPay(cart) {
+    const radios = document.querySelector('input[name="paymentMethod"]:checked')
+
+    if(radios.value === "bankTransfer") {
+        pay(cart);
+
+    } else if(radios.value === "cash") {
+        alert("cash");
+    }
+  }
