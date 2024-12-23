@@ -191,8 +191,6 @@ def receive():
         "quantity": 150
     }
 
-
-
     session['receive'] = receive
     # Lưu lại dictionary receives vào session
     receives[id] = receive
@@ -225,6 +223,18 @@ def seller():
                            names=name_books,
                            UserRole=UserRole)
 
+@app.route('/order', methods=['post', 'get'])
+def order():
+    cart = session.get('cart')
+
+    try:
+        dao.add_order(cart)
+    except:
+        return jsonify({'status': 500})
+    else:
+        del session['cart']
+        return jsonify({'status': 200})
+
 @app.route('/receipt_sell', methods=['post'])
 def sell():
     receipts = session.get('receipts', {})
@@ -254,8 +264,6 @@ def sell():
 
 @app.route('/api/receipt_sell', methods=['post'])
 def save_receipt_sell():
-    # dao.add_receipt_sell(session.get('receipts'))
-    # return jsonify({'status': 500})
     try:
         dao.add_receipt_sell(session.get('receipts'))
     except:

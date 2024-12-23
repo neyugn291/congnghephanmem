@@ -1,4 +1,5 @@
-from app.models import Category, Book, User, UserRole, Receipt, ReceiptDetail, ReceivedNote, Comment, ReceivedNoteDetail
+from app.models import Category, Book, User, UserRole, Receipt, ReceiptDetail, ReceivedNote, Comment, \
+    ReceivedNoteDetail, Order, OrderDetail
 from app import app, db
 import hashlib
 import cloudinary.uploader
@@ -71,7 +72,7 @@ def add_receipt_online(cart):
     if cart:
         print(cart, "vcl")
         print(current_user)
-        r = Receipt(customer=current_user)
+        r = Receipt(customer=current_user, created_date = func.now())
 
         db.session.add(r)
         print(cart.values())
@@ -149,6 +150,25 @@ def add_comment(content, book_id):
     db.session.commit()
 
     return c
+
+def add_order(orders):
+    if orders:
+
+        order = Order(user=current_user, order_day=func.now())
+
+
+
+        db.session.add(order)
+        # db.session.commit()
+
+        for o in orders.values():
+            #print(type(r['book_id']), type(r['quantity']), type(rn.id))
+            od = OrderDetail(order=order, book_id=int(o['id']),
+                             quantity=int(o['quantity']), price=float(o['price']))
+
+            db.session.add(od)
+
+    db.session.commit()
 
 if __name__ == '__main__':
     with app.app_context():

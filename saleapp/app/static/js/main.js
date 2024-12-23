@@ -73,23 +73,7 @@ function renderInfoCart(data) {
     info[1].textContent = "Tổng tiền: " + formattedTotalAmount + "VNĐ";
 }
 
-function pay(cart) {
-    if (confirm("Bạn chắc chắn thanh toán không?") === true) {
-        fetch('/api/pay', {
-            method: 'post',
-            body: {
-                "cart": cart
-            }
-        }).then(res => res.json()).then(data => {
-            console.log(data)
-            if (data.status === 200) {
-                alert("Thanh toán thành công!");
-                window.location.href = "/cart";  // Chuyển hướng đến trang cart
-                window.location.reload();
-            }
-        });
-    }
-}
+
 
 function addComment(bookId) {
     fetch(`/api/books/${bookId}/comments`, {
@@ -278,8 +262,6 @@ function inputFormReceipt() {
     }
 }
 
-
-
 function selectPay(cart) {
     const radios = document.querySelector('input[name="paymentMethod"]:checked')
 
@@ -287,6 +269,41 @@ function selectPay(cart) {
         pay(cart);
 
     } else if(radios.value === "cash") {
-        alert("cash");
+        addOrder(cart);
     }
   }
+
+function addOrder(cart) {
+    fetch("/order", {
+        method: "post",
+        body: JSON.stringify({
+            "cart":cart
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(res => res.json()).then(data => {
+        console.log(data)
+        if (data.status === 200) {
+                alert("Đặt hàng thành công!");
+                window.location.reload();
+            }
+    })
+}
+
+function pay(cart) {
+    if (confirm("Bạn chắc chắn thanh toán không?") === true) {
+        fetch('/api/pay', {
+            method: 'post',
+            body: {
+                "cart": cart
+            }
+        }).then(res => res.json()).then(data => {
+            console.log(data)
+            if (data.status === 200) {
+                alert("Thanh toán thành công!");
+                window.location.reload();
+            }
+        });
+    }
+}
