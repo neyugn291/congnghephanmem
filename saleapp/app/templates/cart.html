@@ -14,11 +14,12 @@
     </tr>
     {% for c in session['cart'].values() %}
     <tr id="cart-id-{{ c.id }}">
-<!--        <td>{{ c.id }}</td>-->
+        <!--        <td>{{ c.id }}</td>-->
         <td>{{ c.name }}</td>
         <td>{{ "{:,.0f}".format(c.price) }} VNĐ</td>
         <td>
-            <input type="number" value="{{ c.quantity }}" min="1" class="form-control quantity" onchange="changeQuantity({{c.id}})" />
+            <input type="number" value="{{ c.quantity }}" min="1" class="form-control quantity"
+                   onchange="changeQuantity({{c.id}})"/>
         </td>
         <td>
             <button class="btn btn-danger" onclick="removeFromCart({{c.id}})">&times;</button>
@@ -31,31 +32,32 @@
     <h3>Tổng sản phẩm: {{ cart_stats.total_quantity }}</h3>
     <h3>Tổng tiền: {{ "{:,.0f}".format(cart_stats.total_amount) }}VNĐ</h3>
 </div>
-<div class="alert alert-info cart-info" style="background-color: var(--beige-color)">
- <h5 class="">Phương Thức Thanh Toán</h5>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" checked="True" name="paymentMethod" id="bankTransfer" value="bankTransfer">
-            <label class="form-check-label" for="bankTransfer">
-                Chuyển khoản ngân hàng
-            </label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="paymentMethod" id="cash" value="cash">
-            <label class="form-check-label" for="cash">
-                Thanh toán trực tiếp
-            </label>
-        </div>
-</div>
-{% if current_user.is_authenticated %}
-<div>
-    <button class="btn btn-success" onclick="selectPay({{cart}})">Thanh toán</button>
-</div>
-{% else %}
-<p>Vui lòng <a href="/login?next=/cart">đăng nhập</a> để thanh toán!</p>
-{% endif %}
+<div class="alert alert-info cart-info mb-5" style="background-color: var(--beige-color)">
+    <h5 class="">Phương Thức Thanh Toán</h5>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" checked="True" name="paymentMethod" id="bankTransfer"
+               value="bankTransfer">
+        <label class="form-check-label" for="bankTransfer">
+            Chuyển khoản ngân hàng
+        </label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="paymentMethod" id="cash" value="cash">
+        <label class="form-check-label" for="cash">
+            Thanh toán trực tiếp
+        </label>
+    </div>
 
-{% else %}
-<div class="alert alert-info">KHÔNG có sản phẩm nào trong giỏ!</div>
-{% endif %}
+    {% if current_user.is_authenticated %}
+    <div>
+        <button class="btn btn-success" onclick="selectPay({{cart}})">Thanh toán</button>
+    </div>
+    {% else %}
+    <p>Vui lòng <a href="/login?next=/cart">đăng nhập</a> để thanh toán!</p>
+    {% endif %}
 
-{% endblock %}
+    {% else %}
+    <div class="alert alert-info">KHÔNG có sản phẩm nào trong giỏ!</div>
+    {% endif %}
+</div>
+    {% endblock %}

@@ -1,6 +1,6 @@
 .container {
-    background-color: #B59F78;
-    min-height: 50vh;
+     background-color: #B59F78;
+     min-height: 50vh;
 }
 
 body {
@@ -14,7 +14,6 @@ tr {
 }
 ul.nav-tabs {
     background-color: #D8DBBD;
-
 }
 .navbar {
     background-color: #213555 !important;

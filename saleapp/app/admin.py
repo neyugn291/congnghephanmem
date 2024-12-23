@@ -29,7 +29,6 @@ class CategoryView(AdminView):
     page_size = 5
 
 
-
 class BookView(AdminView):
     column_list = ['id','author' , 'name', 'price']
     can_export = True
@@ -40,6 +39,8 @@ class BookView(AdminView):
 
 class UserView(AdminView):
     column_list = ['id', 'username', 'password', 'user_role']
+    page_size = 5
+    form_columns = ['name','username', 'password','email','phone', 'location', 'user_role']
 
     def on_model_change(self, form, model, is_created):
         if 'password' in form:

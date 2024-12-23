@@ -105,7 +105,7 @@ function inputFormReceive() {
     }
 }
 
-function addToReceiveNote(id, book_id, name, author, type) {
+function addToReceiveNote(id, book_id, name, author, type ,quantity) {
     fetch("/receive", {
         method: "POST",
         body: JSON.stringify({
@@ -114,6 +114,7 @@ function addToReceiveNote(id, book_id, name, author, type) {
             "name": name,
             "author": author,
             "type": type,
+            "quantity": quantity
         }),
         headers: {
             'Content-Type': 'application/json'
@@ -122,12 +123,14 @@ function addToReceiveNote(id, book_id, name, author, type) {
         .then(res => res.json())
         .then(data => {
             console.log(data);
+            console.log(`${data['receive'].id}`);
             let tbo = document.querySelector(`.input-${data['receive'].id}`);
-            //console.log(tbo)
+            console.log(tbo);
             tbo.children[0].textContent = data['receive'].id;
+            tbo.children[1].name = data['receive'].book_id;
             tbo.children[2].textContent = data['receive'].type;
             tbo.children[3].textContent = data['receive'].author;
-            tbo.children[4].value = parseInt(data['receive'].quantity, 10);
+            tbo.children[4].children[0].value = data['receive'].quantity;
         })
 }
 
@@ -137,42 +140,61 @@ function renderRowInputWareHouse() {
     row_id_warehouse++;
     let tbody = document.querySelector("tbody");
     let newTr = document.createElement("tr");
-    newTr.classList.add(`input-${row_id_warehouse}`);  // Thêm class cho mỗi dòng mới
+    newTr.classList.add(`input-${row_id_warehouse}`);
+    newTr.id = `${row_id_warehouse}`;
     newTr.innerHTML = `
         <td class="text-center">${row_id_warehouse}</td>
         <td>
-            <div class="container">
-                <input class="form-control search-input" list="suggestions" placeholder="Nhập từ khóa..." />
-            </div>
+                <input class="form-control search-input" list="suggestions" oninput="searchInputReceiveNote()" name="${row_id_warehouse}" placeholder="Nhập từ khóa..." />
         </td>
         <td></td>
         <td></td>
-        <td><input type="number" class="form-control"></td>
+        <td><input type="number" oninput="searchInputReceiveNote()" value="1" class="form-control"></td>
     `;
+    // Thêm dòng mới vào tbody
+    tbody.appendChild(newTr);
+    // Tăng giá trị row_id_warehouse sau mỗi lần gọi
+}
 
-    // Lựa chọn trường tìm kiếm duy nhất với class "search-input"
-    let searchInput = newTr.querySelector(".search-input");
-
-    // Thêm sự kiện "input" vào trường tìm kiếm
-    searchInput.addEventListener("input", function (event) {
-        let input = event.target;
+function searchInputReceiveNote() {
+    let input = event.target;
+    //console.log(input)
+    let tr_parent =input.closest('[id]');
+    console.log(tr_parent.children[1].children[0].name);
+    if (input.name === tr_parent.id) {
         let selectedOption = Array.from(document.querySelectorAll("#suggestions option")).find(option => option.value === input.value);
-
         if (selectedOption) {
             let book_id = selectedOption.getAttribute("data-id");
             let name = selectedOption.value;
             let author = selectedOption.getAttribute("data-author");
             let type = selectedOption.getAttribute("data-type");
-
+            let quantity = parseInt(tr_parent.children[4].children[0].value);
+            //console.log(typeof(quantity));
             // Gọi hàm addToReceiveNote với các tham số đã chọn
-            addToReceiveNote(row_id_warehouse, book_id, name, author, type);
+            addToReceiveNote(tr_parent.id, book_id, name, author, type, quantity);
 
         }
-    });
+    }
+    else {
+        console.log(input);
+        let book_id = tr_parent.children[1].name;
+        let name = tr_parent.children[1].value;
+        let author = tr_parent.children[3].textContent;
+        let type = tr_parent.children[2].textContent;
+        let quantity = parseInt(tr_parent.children[4].children[0].value);
+        addToReceiveNote(tr_parent.id, book_id, name, author, type, quantity);
+    }
+}
 
-    // Thêm dòng mới vào tbody
-    tbody.appendChild(newTr);
-    // Tăng giá trị row_id_warehouse sau mỗi lần gọi
+function deleteReceives() {
+    if (confirm("Bạn chắc chắn xóa không?") === true) {
+        fetch('/api/receive', {
+            method: "delete"
+        }).then(res => res.json()).then(data => {
+            alert("Xóa thành công!");
+            location.reload();
+        })
+    }
 }
 
 //SELLER
@@ -182,44 +204,52 @@ function renderRowInputSeller() {
     row_id_seller++;
     let tbody = document.querySelector("tbody");
     let newTr = document.createElement("tr");
-    newTr.classList.add(`input-${row_id_seller}`);  // Thêm class cho mỗi dòng mới
+    newTr.classList.add(`input-${row_id_seller}`);
+    newTr.id = `${row_id_seller}`;
     newTr.innerHTML = `
         <td class="text-center">${row_id_seller}</td>
         <td>
-            <div class="container">
-                <input class="form-control search-input" list="suggestions" placeholder="Nhập từ khóa..." />
-            </div>
+                <input class="form-control search-input" list="suggestions" oninput="searchInputSell()" name="${row_id_seller}" placeholder="Nhập từ khóa..." />
         </td>
         <td></td>
-        <td><input type="number" class="form-control"></td>
+        <td><input type="number" oninput="searchInputSell()" value="1" class="form-control"></td>
         <td></td>
     `;
 
-    // Lựa chọn trường tìm kiếm duy nhất với class "search-input"
-    let searchInput = newTr.querySelector(".search-input");
+    tbody.appendChild(newTr);
 
-    // Thêm sự kiện "input" vào trường tìm kiếm
-    searchInput.addEventListener("input", function (event) {
-        let input = event.target;
+}
+
+function searchInputSell() {
+    let input = event.target;
+    //console.log(input)
+    let tr_parent =input.closest('[id]');
+    console.log(tr_parent.children[1].children[0].name);
+    if (input.name === tr_parent.id) {
         let selectedOption = Array.from(document.querySelectorAll("#suggestions option")).find(option => option.value === input.value);
-
         if (selectedOption) {
             let book_id = selectedOption.getAttribute("data-id");
             let name = selectedOption.value;
             let price = selectedOption.getAttribute("data-price");
             let type = selectedOption.getAttribute("data-type");
-
+            let quantity = parseInt(tr_parent.children[3].children[0].value);
+            //console.log(typeof(quantity));
             // Gọi hàm addToReceiveNote với các tham số đã chọn
-            addToReceipt(row_id_seller, book_id, name, price, type);
-
+            addToReceipt(tr_parent.id, book_id, name, price, type, quantity);
         }
-    });
-    // Thêm dòng mới vào tbody
-    tbody.appendChild(newTr);
-    // Tăng giá trị row_id_seller sau mỗi lần gọi
+    }
+    else {
+        console.log(input);
+        let book_id = tr_parent.children[1].name;
+        let name = tr_parent.children[1].value;
+        let price = tr_parent.children[4].textContent.replace(" VND", "").replace(/,/g, "");
+        let type = tr_parent.children[2].textContent;
+        let quantity = parseInt(tr_parent.children[3].children[0].value);
+        addToReceipt(tr_parent.id, book_id, name, price, type, quantity);
+    }
 }
 
-function addToReceipt(id, book_id, name, price, type) {
+function addToReceipt(id, book_id, name, price, type, quantity) {
     fetch("/receipt_sell", {
         method: "POST",
         body: JSON.stringify({
@@ -228,21 +258,24 @@ function addToReceipt(id, book_id, name, price, type) {
             "name": name,
             "price": price,
             "type": type,
+            "quantity": quantity
         }),
         headers: {
             'Content-Type': 'application/json'
         }
-    })
-        .then(res => res.json())
-        .then(data => {
+    }).then(res => res.json()).then(data => {
             console.log(data);
+            console.log(`${data['receipt'].id}`);
             let tbo = document.querySelector(`.input-${data['receipt'].id}`);
-            //console.log(tbo)
+            console.log(tbo);
             tbo.children[0].textContent = data['receipt'].id;
+            tbo.children[1].name = data['receipt'].book_id;
             tbo.children[2].textContent = data['receipt'].type;
-            tbo.children[3].getAttribute('')
-            tbo.children[3].value = parseInt(data['receipt'].quantity, 10);
+            tbo.children[3].children[0].value = data['receipt'].quantity;
             tbo.children[4].textContent = Number(data['receipt'].price).toLocaleString() + " VND";
+
+            let total = document.querySelector(".total_amount");
+            total.textContent = Number(data['receipt_stats'].total_amount).toLocaleString() + " VND";
         })
 }
 
@@ -262,16 +295,77 @@ function inputFormReceipt() {
     }
 }
 
-function selectPay(cart) {
-    const radios = document.querySelector('input[name="paymentMethod"]:checked')
-
-    if(radios.value === "bankTransfer") {
-        pay(cart);
-
-    } else if(radios.value === "cash") {
-        addOrder(cart);
+function deleteReceipts() {
+    if (confirm("Bạn chắc chắn xóa không?") === true) {
+        fetch('/api/receipt_sell', {
+            method: "delete"
+        }).then(res => res.json()).then(data => {
+            alert("Xóa thành công!");
+            location.reload();
+        })
     }
-  }
+}
+
+function renderTableOrderDetail() {
+    let input = event.target;
+    console.log(parseInt(input.value));
+    if (parseInt(input.value)){
+    console.log("in");
+        fetch('/receipt_order', {
+            method: 'POST',
+            body: JSON.stringify({
+                'order_id': input.value
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(data => {
+                let tbody = document.querySelector("tbody.order");
+                //console.log(tbody);
+                if (tbody.hasChildNodes()){
+                    tbody.innerHTML ='';
+                }
+                console.log(data['receipts']);
+                console.log(data['receipts'][1]['customer_id']);
+                for (let r_id in data['receipts']){
+                    //console.log(r_id);
+                    let receipt = data['receipts'][r_id];
+                    //console.log(receipt['name']);
+                    let newTr = document.createElement("tr");
+                    newTr.classList.add(`input-${r_id}`);
+                    newTr.id = `${r_id}`;
+                    newTr.innerHTML = `
+                        <td class="text-center">${r_id}</td>
+                        <td>${receipt['name']}</td>
+                        <td>${receipt['type']}</td>
+                        <td>${receipt['quantity']}</td>
+                        <td>${receipt['price']}</td>
+                    `;
+
+                    tbody.appendChild(newTr);
+                }
+                let total = document.querySelector(".total_amount_order");
+                //console.log(total);
+                total.textContent = Number(data['receipt_stats'].total_amount).toLocaleString() + " VND";
+            })
+        }
+}
+
+function inputFormReceiptOrder() {
+    if (confirm("Bạn chắc chắn thanh toán không?") === true) {
+        fetch('/api/receipt_order', {
+            method: 'post'
+        }).then(res => res.json()).then(data => {
+            console.log(data)
+            if (data.status === 200) {
+                alert("Thanh toán thành công!");
+                console.log(data)
+                location.reload();
+                //let tr = document.querySelector("tbody.warehouse").classList.add('none');
+            }
+        })
+    }
+}
 
 function addOrder(cart) {
     fetch("/order", {
@@ -307,3 +401,14 @@ function pay(cart) {
         });
     }
 }
+
+function selectPay(cart) {
+    const radios = document.querySelector('input[name="paymentMethod"]:checked')
+
+    if(radios.value === "bankTransfer") {
+        pay(cart);
+
+    } else if(radios.value === "cash") {
+        addOrder(cart);
+    }
+  }

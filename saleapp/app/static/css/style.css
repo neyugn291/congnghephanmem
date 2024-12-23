@@ -31,5 +31,7 @@ body {
     display: none;
 }
 
-
-
+.btn-custom {
+    background-color: var(--navy-color);
+    color: white;
+}

@@ -70,14 +70,11 @@ def add_user(name, username, password, avatar=None):
 
 def add_receipt_online(cart):
     if cart:
-        print(cart, "vcl")
-        print(current_user)
-        r = Receipt(customer=current_user, created_date = func.now())
+        r = Receipt(customer=current_user, received_day = func.now())
 
         db.session.add(r)
-        print(cart.values())
-        for c in cart.values():
 
+        for c in cart.values():
             d = ReceiptDetail(quantity=c['quantity'], price=c['price'],
                                receipt=r, book_id=c['id'])
             db.session.add(d)
@@ -96,12 +93,26 @@ def add_receipt_sell(receipts):
 
         for r in receipts.values():
             print(type(r['book_id']),type(r['quantity']),type(r['id']),type(r['price']))
-            rd = ReceiptDetail(receipt=rec , book_id=int(r['book_id']), quantity=r['quantity'], price=float(r['price']))
+            rd = ReceiptDetail(receipt=rec , book_id=r['book_id'], quantity=r['quantity'], price=r['price'])
 
             db.session.add(rd)
 
     db.session.commit()
 
+def add_receipt_order(receipts):
+    if receipts:
+
+        rec = Receipt(seller = current_user, customer_id = receipts['1']['customer_id'], created_date = func.now())
+
+        db.session.add(rec)
+
+        for r in receipts.values():
+            print(type(r['book_id']), type(r['quantity']), type(r['id']), type(r['price']))
+            rd = ReceiptDetail(receipt=rec, book_id=r['book_id'], quantity=r['quantity'], price=r['price'])
+
+            db.session.add(rd)
+
+    db.session.commit()
 
 def add_receive_note(receives):
     if receives:
@@ -121,6 +132,31 @@ def add_receive_note(receives):
 
     db.session.commit()
 
+def load_comments(book_id):
+    return Comment.query.filter(Comment.book_id.__eq__(book_id)).order_by(-Comment.id).all()
+
+
+def add_comment(content, book_id):
+    c = Comment(content=content, book_id=book_id, user=current_user, created_date = datetime.now())
+    db.session.add(c)
+    db.session.commit()
+
+    return c
+
+def add_order(orders):
+    if orders:
+        order = Order(user=current_user, order_day=func.now())
+        db.session.add(order)
+        # db.session.commit()
+        for o in orders.values():
+            #print(type(r['book_id']), type(r['quantity']), type(rn.id))
+            od = OrderDetail(order=order, book_id=int(o['id']),
+                             quantity=int(o['quantity']), price=float(o['price']))
+            db.session.add(od)
+    db.session.commit()
+
+def get_order_details_by_order_id(order_id):
+    return OrderDetail.query.filter(OrderDetail.order_id.__eq__(order_id)).order_by(OrderDetail.id).all()
 
 def revenue_stats():
     return db.session.query(Book.id, Book.name, func.sum(ReceiptDetail.quantity * ReceiptDetail.price))\
@@ -138,37 +174,6 @@ def revenue_time(time='month', year=datetime.now().year):
 def books_stats():
     return db.session.query(Category.id, Category.name, func.count(Book.id))\
                 .join(Book, Book.category_id.__eq__(Category.id), isouter=True).group_by(Category.id).all()
-
-
-def load_comments(book_id):
-    return Comment.query.filter(Comment.book_id.__eq__(book_id)).order_by(-Comment.id).all()
-
-
-def add_comment(content, book_id):
-    c = Comment(content=content, book_id=book_id, user=current_user, created_date = datetime.now())
-    db.session.add(c)
-    db.session.commit()
-
-    return c
-
-def add_order(orders):
-    if orders:
-
-        order = Order(user=current_user, order_day=func.now())
-
-
-
-        db.session.add(order)
-        # db.session.commit()
-
-        for o in orders.values():
-            #print(type(r['book_id']), type(r['quantity']), type(rn.id))
-            od = OrderDetail(order=order, book_id=int(o['id']),
-                             quantity=int(o['quantity']), price=float(o['price']))
-
-            db.session.add(od)
-
-    db.session.commit()
 
 if __name__ == '__main__':
     with app.app_context():

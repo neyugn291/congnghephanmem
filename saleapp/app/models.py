@@ -23,7 +23,8 @@ class Location(db.Model):
 
     users = relationship('User', backref='location', lazy=True)
 
-
+    def __repr__(self):
+        return f"{self.city}, {self.district}, {self.commune}, {self.specific}"
 class User(db.Model, UserMixin):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)

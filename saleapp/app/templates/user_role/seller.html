@@ -4,6 +4,12 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/seller.css') }}"/>
 {% if current_user.is_authenticated %}
 
+<datalist id="suggestions">
+    {% for n in names %}
+    <option value="{{ n.name }}" data-id="{{ n.id }}" data-price="{{ n.price }}" data-type="{{ n.category.name }}">
+    {% endfor %}
+</datalist>
+
 <nav class="navbar navbar-expand-lg navbar-dark nav-custom">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">Thanh toán</a>
@@ -13,44 +19,91 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item nav-item-custom">
-                    <a class="nav-link" href="#">Bán sách</a>
+                    <a class="nav-link" href="#" onclick="showContent('sell')">Bán sách</a>
                 </li>
                 <li class="nav-item nav-item-custom">
-                    <a class="nav-link" href="#">Đơn đặt hàng</a>
+                    <a class="nav-link" href="#" onclick="showContent('order')">Đơn đặt hàng</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
 
-<table class="table table-bordered table-custom">
-    <thead>
-    <tr>
-        <th class="text-center fs-2" colspan="5">Hóa đơn</th>
-    </tr>
-    <tr>
-        <th class="text-center" colspan="5">Ngày lập hóa đơn: {{ current }}</th>
-    </tr>
-    <tr>
-        <th class="text-center col-1">STT</th>
-        <th class="text-center">Sách</th>
-        <th class="text-center col-2">Thể loại</th>
-        <th class="text-center col-2">Số lượng</th>
-        <th class="text-center col-2">Đơn giá</th>
-    </tr>
-    </thead>
-    <datalist id="suggestions">
-        {% for n in names %}
-            <option value="{{ n.name }}" data-id="{{ n.id }}" data-price="{{ n.price }}" data-type="{{ n.category.name }}">
-        {% endfor %}
-    </datalist>
-    <tbody>
 
+<div id="sell" class="content-section ">
+    <table class="table table-bordered table-custom">
+        <thead>
+        <tr>
+            <th class="text-center" colspan="5">Ngày lập : {{ current }}</th>
+        </tr>
+        <tr>
+            <th class="text-center col-2">STT</th>
+            <th class="text-center">Sách</th>
+            <th class="text-center col-2">Thể loại</th>
+            <th class="text-center col-2">Số lượng</th>
+            <th class="text-center col-2">Đơn giá</th>
+        </tr>
+        </thead>
 
-    </tbody>
-</table>
-<button class="btn btn-success mt-3" onclick="renderRowInputSeller()">Thêm</button>
-<button type="submit" class="btn btn-success mt-3" onclick="inputFormReceipt()">Gửi</button>
+        <tbody class="sell"></tbody>
 
+        <tfoot>
+        <tr>
+            <td colspan="1" class="text-center">Tổng tiền</td>
+            <td colspan="4" class="text-center total_amount">{{ "{:,.0f}".format(receipt_stats.total_amount) }} VNĐ</td>
+        </tr>
+        </tfoot>
+    </table>
+
+    <button class="btn btn-custom my-3 mx-2" onclick="renderRowInputSeller()">Thêm</button>
+    <button class="btn btn-custom my-3 mx-2" onclick="deleteReceipts()">Xóa</button>
+    <button type="submit" class="btn btn-custom my-3 mx-2" onclick="inputFormReceipt()">Gửi</button>
+</div>
+
+<div id="order" class="content-section none">
+    <table class="table table-bordered table-custom">
+        <thead>
+        <tr>
+            <th class="text-center " colspan="1">Nhập mã đơn hàng :</th>
+            <th class="text-center " colspan="4">
+                <input type="text" class="form-control search-input" oninput="renderTableOrderDetail()"/>
+            </th>
+        </tr>
+        <tr>
+            <th class="text-center" colspan="5">Ngày lập : {{ current }}</th>
+        </tr>
+        <tr>
+            <th class="text-center col-2">STT</th>
+            <th class="text-center">Sách</th>
+            <th class="text-center col-2">Thể loại</th>
+            <th class="text-center col-2">Số lượng</th>
+            <th class="text-center col-2">Đơn giá</th>
+        </tr>
+        </thead>
+
+        <tbody class="order"></tbody>
+
+        <tfoot>
+        <tr>
+            <td colspan="1" class="text-center">Tổng tiền</td>
+            <td colspan="4" class="text-center total_amount_order">{{ "{:,.0f}".format(receipt_stats.total_amount) }} VNĐ</td>
+        </tr>
+        </tfoot>
+    </table>
+
+    <button class="btn btn-custom my-3 mx-2" onclick="deleteReceipts()">Xóa</button>
+    <button type="submit" class="btn btn-custom my-3 mx-2" onclick="inputFormReceiptOrder()">Gửi</button>
+</div>
+
+<script>
+    function showContent(sectionId) {
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            section.classList.add('none');
+        });
+        document.getElementById(sectionId).classList.remove('none');
+    }
+
+</script>
 {% endif %}
 {% endblock %}

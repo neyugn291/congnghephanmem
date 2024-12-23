@@ -7,24 +7,24 @@
 <div class="row">
     <div class="col-md-7 col-12">
         <div class="content">
-        <table class="table table-striped">
-            <tr>
-                <th>Id</th>
-                <th>Tên danh  mục</th>
-                <th>Số lượng</th>
-            </tr>
-            {% for s in stats %}
-            <tr>
-                <td>{{ s[0] }}</td>
-                <td>{{ s[1] }}</td>
-                <td>{{ s[2] }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+            <table class="table table-striped">
+                <tr>
+                    <th>Id</th>
+                    <th>Tên danh mục</th>
+                    <th>Số lượng</th>
+                </tr>
+                {% for s in stats %}
+                <tr>
+                    <td>{{ s[0] }}</td>
+                    <td>{{ s[1] }}</td>
+                    <td>{{ s[2] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
-     </div>
     <div class="col-md-5 col-12">
-         <canvas id="myChart"></canvas>
+        <canvas id="myChart"></canvas>
     </div>
 </div>
 
@@ -73,7 +73,7 @@
 </script>
 
 {% else %}
-  <h1 class="text-center text-success mt-1">ĐĂNG NHẬP QUẢN TRỊ</h1>
+<h1 class="text-center text-success mt-1">ĐĂNG NHẬP QUẢN TRỊ</h1>
 <form method="post" action="/login-admin">
     <div class="form-floating mb-3 mt-3">
         <input type="text" class="form-control" id="username" placeholder="Tên đăng nhập" name="username">
@@ -86,7 +86,7 @@
     </div>
 
     <div class="form-floating mt-3 mb-3">
-        <input type="submit"  value="Đăng nhập" class="btn btn-success" />
+        <input type="submit" value="Đăng nhập" class="btn btn-success"/>
     </div>
 </form>
 {% endif %}

@@ -165,7 +165,7 @@ def warehouse():
     kw = request.args.get('dropdownMenuButton')
     page_size = dao.count_books()
     name_books = dao.load_books(kw=kw, page_size=page_size)
-    current_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
+    current_time = datetime.now().strftime('%d-%m-%Y')
     return render_template('user_role/warehouse.html',
                            current=current_time,
                            names=name_books,
@@ -181,6 +181,7 @@ def receive():
     author = str(request.json.get('author'))
     type = str(request.json.get('type'))
     name = str(request.json.get('name'))
+    quantity = request.json.get('quantity')
 
     receive = {
         "id": id,
@@ -188,7 +189,7 @@ def receive():
         "name": name,
         "author": author,
         "type": type,
-        "quantity": 150
+        "quantity": quantity
     }
 
     session['receive'] = receive
@@ -211,13 +212,21 @@ def input():
         session['receives'] = {}
         return jsonify({'status': 200})
 
+@app.route('/api/receive', methods=['delete'])
+def delete_receive():
+    receives = session.get('receives',{})
+    receives = {}
+    session['receives'] = receives
+
+    return jsonify({'receives': receives})
+
 
 @app.route('/seller', methods=['post', 'get'])
 def seller():
     kw = request.args.get('dropdownMenuButton')
     page_size = dao.count_books()
     name_books = dao.load_books(kw=kw, page_size=page_size)
-    current_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
+    current_time = datetime.now().strftime('%d-%m-%Y')
     return render_template('user_role/seller.html',
                            current=current_time,
                            names=name_books,
@@ -226,7 +235,6 @@ def seller():
 @app.route('/order', methods=['post', 'get'])
 def order():
     cart = session.get('cart')
-
     try:
         dao.add_order(cart)
     except:
@@ -239,19 +247,20 @@ def order():
 def sell():
     receipts = session.get('receipts', {})
     receipt = session.get('receipt', {})
-    id = str(request.json.get('id'))
-    book_id = str(request.json.get('book_id'))
-    price = str(request.json.get('price'))
-    type = str(request.json.get('type'))
-    name = str(request.json.get('name'))
+    id = request.json.get('id')
+    book_id = request.json.get('book_id')
+    price = request.json.get('price')
+    type = request.json.get('type')
+    name = request.json.get('name')
+    quantity = request.json.get('quantity')
 
     receipt = {
         "id": id,
-        "book_id": book_id,
+        "book_id": int(book_id),
         "name": name,
-        "price": price,
+        "price": float(price),
         "type": type,
-        "quantity": 150
+        "quantity": quantity
     }
 
     session['receipt'] = receipt
@@ -260,10 +269,12 @@ def sell():
     session['receipts'] = receipts
 
     # Trả về danh sách receipts
-    return jsonify({"receipt":receipt,"receipts": receipts})
+    return jsonify({"receipt":receipt,"receipts": receipts,'receipt_stats': utils.stats_receipts(receipts)})
 
 @app.route('/api/receipt_sell', methods=['post'])
 def save_receipt_sell():
+    # dao.add_receipt_sell(session.get('receipts'))
+    # return jsonify({'status': 500})
     try:
         dao.add_receipt_sell(session.get('receipts'))
     except:
@@ -272,15 +283,63 @@ def save_receipt_sell():
         session['receipts'] = {}
         return jsonify({'status': 200})
 
+@app.route('/api/receipt_sell', methods=['delete'])
+def delete_receipt_sell():
+    receipts = session.get('receipts',{})
+    receipts = {}
+    session['receipts'] = receipts
+
+    return jsonify({'receipts': receipts})
+
+@app.route('/receipt_order',methods=['post','get'])
+def get_orders():
+    receipts =session.get('receipts',{})
+    receipts = {}
+    order_id = request.json.get('order_id')
+    print(int(order_id))
+    orders = dao.get_order_details_by_order_id(order_id)
+    print(orders)
+    if orders:
+        print(orders[0].order.user_id)
+        id = 0
+        for od in orders:
+            id+=1
+            receipt ={
+                "id" : id,
+                "customer_id": orders[id-1].order.user_id,
+                "book_id": int(od.book.id),
+                "name": od.book.name,
+                "type": od.book.category.name,
+                "price": float(od.price),
+                "quantity": int(od.quantity)
+            }
+            receipts[id] = receipt
+
+        session['receipts'] = receipts
+
+    return jsonify({"receipts": receipts,
+                    'receipt_stats': utils.stats_receipts(receipts)})
+
+@app.route('/api/receipt_order', methods=['post'])
+def save_receipt_order():
+    # dao.add_receipt_order(session.get('receipts'))
+    # return jsonify({'status': 500})
+    try:
+        dao.add_receipt_order(session.get('receipts'))
+    except:
+        return jsonify({'status': 500})
+    else:
+        session['receipts'] = {}
+        return jsonify({'status': 200})
 
 @app.context_processor
 def common_response():
-    cart = session.get('cart')
-    if cart is None:
-        cart = {}
+    cart = session.get('cart', {})
+    receipts = session.get('receipts', {})
     return {
         'categories': dao.load_categories(),
-        'cart_stats': utils.stats_cart(cart)
+        'cart_stats': utils.stats_cart(cart),
+        'receipt_stats': utils.stats_receipts(receipts)
     }
 
 
