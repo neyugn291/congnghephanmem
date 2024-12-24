@@ -1,5 +1,5 @@
 from app.models import Category, Book, User, UserRole, Receipt, ReceiptDetail, ReceivedNote, Comment, \
-    ReceivedNoteDetail, Order, OrderDetail
+    ReceivedNoteDetail, Order, OrderDetail, Regulation
 from app import app, db
 import hashlib
 import cloudinary.uploader
@@ -54,7 +54,6 @@ def auth_user(username, password, role=None):
 
     if role:
         u = u.filter(User.user_role.__eq__(UserRole.ADMIN))
-
     return u.first()
 
 
@@ -184,6 +183,23 @@ def frequency_time(time='month', year=datetime.now().year):
                     .order_by(func.extract(time, Receipt.created_date)).all()
 
 
+def get_cancel_time():
+    result = db.session.query(Regulation.order_cancel_time).first()
+    if result:
+        return result[0]
+    return None
+
+def get_inventory_quantity():
+    result = db.session.query(Regulation.inventory_quantity).first()
+    if result:
+        return result[0]
+    return None
+
+def get_add_book_quantity():
+    result = db.session.query(Regulation.add_book_quantity).first()
+    if result:
+        return result[0]
+    return None
 
 def books_stats():
     return db.session.query(Category.id, Category.name, func.count(Book.id))\

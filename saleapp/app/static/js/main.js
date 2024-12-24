@@ -89,7 +89,7 @@ function addComment(bookId) {
     })
 }
 
-function inputFormReceive() {
+function inputFormReceive(min) {
     if (confirm("Bạn chắc chắn nhập sách không?") === true) {
         fetch('/api/receive', {
             method: 'post'
@@ -149,7 +149,7 @@ function renderRowInputWareHouse() {
         </td>
         <td></td>
         <td></td>
-        <td><input type="number" oninput="searchInputReceiveNote()" value="1" class="form-control"></td>
+        <td><input type="number" oninput="searchInputReceiveNote()" value="150" class="form-control"></td>
     `;
     // Thêm dòng mới vào tbody
     tbody.appendChild(newTr);
@@ -168,20 +168,31 @@ function searchInputReceiveNote() {
             let name = selectedOption.value;
             let author = selectedOption.getAttribute("data-author");
             let type = selectedOption.getAttribute("data-type");
+            let inventory = parseInt(selectedOption.getAttribute("data-quantity"));
+            let min = parseInt(document.querySelector("table").id);
+            if ( inventory >= min) {
+                alert("Chỉ nhập những đầu sách tồn kho ít hơn " + min);
+                return;
+            }
             let quantity = parseInt(tr_parent.children[4].children[0].value);
+
             //console.log(typeof(quantity));
             // Gọi hàm addToReceiveNote với các tham số đã chọn
             addToReceiveNote(tr_parent.id, book_id, name, author, type, quantity);
-
         }
     }
     else {
-        console.log(input);
+        //console.log(input);
         let book_id = tr_parent.children[1].name;
         let name = tr_parent.children[1].value;
         let author = tr_parent.children[3].textContent;
         let type = tr_parent.children[2].textContent;
         let quantity = parseInt(tr_parent.children[4].children[0].value);
+        let add = parseInt(document.querySelector("thead").id);
+        if ( quantity < add ) {
+                alert("Số lượng nhập phải lớn hơn " + add);
+                return;
+        }
         addToReceiveNote(tr_parent.id, book_id, name, author, type, quantity);
     }
 }
@@ -378,8 +389,10 @@ function addOrder(cart) {
         }
     }).then(res => res.json()).then(data => {
         console.log(data)
-        if (data.status === 200) {
+        console.log(data[0].status)
+        if (data[0].status === 200) {
                 alert("Đặt hàng thành công!");
+                alert("Vui lòng thanh toán trong vòng " + data[1].time + " giờ");
                 window.location.reload();
             }
     })

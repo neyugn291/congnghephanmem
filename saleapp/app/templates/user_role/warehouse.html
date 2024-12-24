@@ -4,8 +4,8 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/warehouse.css') }}"/>
 {% if current_user.is_authenticated %}
-<table class="table table-bordered table-custom">
-    <thead>
+<table class="table table-bordered table-custom" id="{{ min }}">
+    <thead id="{{ add }}">
     <tr>
         <th class="text-center fs-2" colspan="5">Phiếu nhập sách</th>
     </tr>
@@ -22,7 +22,7 @@
     </thead>
     <datalist id="suggestions">
         {% for n in names %}
-            <option value="{{ n.name }}" data-id="{{ n.id }}" data-author="{{ n.author }}" data-type="{{ n.category.name }}">
+            <option value="{{ n.name }}" data-id="{{ n.id }}" data-author="{{ n.author }}" data-type="{{ n.category.name }}" data-quantity="{{ n.quantity }}">
         {% endfor %}
     </datalist>
     <tbody class="warehouse">

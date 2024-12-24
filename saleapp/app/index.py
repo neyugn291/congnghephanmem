@@ -166,10 +166,15 @@ def warehouse():
     page_size = dao.count_books()
     name_books = dao.load_books(kw=kw, page_size=page_size)
     current_time = datetime.now().strftime('%d-%m-%Y')
+    min_quan = dao.get_inventory_quantity()
+    add_quan = dao.get_add_book_quantity()
+    print(min_quan)
     return render_template('user_role/warehouse.html',
                            current=current_time,
                            names=name_books,
-                           UserRole=UserRole)
+                           UserRole=UserRole,
+                           add = add_quan,
+                           min = min_quan)
 
 
 @app.route('/receive', methods=['post'])
@@ -202,8 +207,6 @@ def receive():
 
 @app.route('/api/receive', methods=['post'])
 def input():
-    # dao.add_receive_note(session.get('receives'))
-    # return jsonify({'status': 500})
     try:
         dao.add_receive_note(session.get('receives'))
     except:
@@ -234,14 +237,16 @@ def seller():
 
 @app.route('/order', methods=['post', 'get'])
 def order():
-    cart = session.get('cart')
+    time = dao.get_cancel_time()
+    cart = session.get('cart', {})
+
     try:
         dao.add_order(cart)
     except:
         return jsonify({'status': 500})
     else:
-        del session['cart']
-        return jsonify({'status': 200})
+        session['cart'] = {}
+        return jsonify({'status': 200},{'time': int(time)})
 
 @app.route('/receipt_sell', methods=['post'])
 def sell():

@@ -62,6 +62,7 @@ class Book(db.Model):
     image = Column(String(100), nullable=False, default="")
     description = Column(Text,default="")
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
+    quantity = Column(Integer, default = 300)
 
     received_note_details = relationship('ReceivedNoteDetail', backref='book', lazy=True)
     order_details = relationship('OrderDetail', backref='book', lazy=True)
@@ -69,9 +70,6 @@ class Book(db.Model):
     comments = relationship('Comment', backref='book', lazy=True)
     def __str__(self):
         return self.name
-
-
-
 
 class ReceivedNote(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -100,7 +98,7 @@ class Regulation(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     order_cancel_time = Column(Integer, default=48)
     add_book_quantity = Column(Integer, default=150)
-    iventory_quantity = Column(Integer, default=300)
+    inventory_quantity = Column(Integer, default=300)
     def get_order_cancel_time(self):
         return timedelta(hours=self.order_cancel_time)
 
@@ -231,43 +229,43 @@ if __name__ == '__main__':
             "author": "",
             "price": 170000,
             "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846487/image-ThieuNhi_3_ova65g.jpg",
-            "category_id": 1
+            "category_id": 2
         }, {
             "name": "Mẹ không phải người giúp việc",
             "author": "",
             "price": 160000,
             "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846486/image-ThieuNhi_2_h67bft.jpg",
-            "category_id": 1
+            "category_id": 2
         }, {
             "name": "Nguồn năng lượng tích cực",
             "author": "",
             "price": 82000,
             "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846491/image-ThieuNhi_1_rsimyy.jpg",
-            "category_id": 1
+            "category_id": 2
         }, {
             "name": "Bài tập tin học 6",
             "author": "",
             "price": 20000,
             "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846492/image-GiaoKhoa_3_djbatm.jpg",
-            "category_id": 2
+            "category_id": 3
         }, {
             "name": "Tiếng viêt 3",
             "author": "",
             "price": 30000,
             "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846491/image-GiaoKhoa_2_fybyon.jpg",
-            "category_id": 2
+            "category_id": 3
         }, {
             "name": "Bài tập ngữ văn 7",
             "author": "",
             "price": 20000,
             "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846492/image-GiaoKhoa_1_tguxox.jpg",
-            "category_id": 2
+            "category_id": 3
         }, {
             "name": "Giấc mơ Nhật",
             "author": "",
             "price": 120000,
             "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846492/image-GiaoKhoa_3_djbatm.jpg",
-            "category_id": 3
+            "category_id": 4
         }]
 
         for p in data:
