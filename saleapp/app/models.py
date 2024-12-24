@@ -60,7 +60,7 @@ class Book(db.Model):
     author = Column(String(255), nullable=False, default="")
     price = Column(Float, default=0)
     image = Column(String(100), nullable=False, default="")
-    description = Column(Text, nullable=True)
+    description = Column(Text,default="")
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
 
     received_note_details = relationship('ReceivedNoteDetail', backref='book', lazy=True)
@@ -142,60 +142,76 @@ class Comment(db.Model):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        r = Regulation(order_cancel_time = 50,add_book_quantity=160,iventory_quantity=170)
+        r = Regulation()
         db.session.add(r)
         u = User(name='Phan Le Nguyen', username='admin', email='abc@com', phone='0123',
                  password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
                  user_role=UserRole.ADMIN)
-        db.session.add(u)
-        db.session.commit()
 
-        location = [{
-            "city":"Thành Phố Hồ Chí Minh",
-            "district": "Nhà Bè",
-            "commune":"xã Nhơn Đức",
-            "specific": "Khu dân cư Nhơn Đức"
-        }, {
-            "city": "Thành Phố Hồ Chí Minh",
-            "district": "Quận 01",
-            "commune": "Phường Cô Giang",
-            "specific": "35-37 Hồ Hảo Hớn"
-        }, {
-            "city": "Thành Phố Hồ Chí Minh",
-            "district": "Quận 3",
-            "commune": "Phường Võ Thị Sáu",
-            "specific": "97 Võ Văn Tần"
-        }, {
-            "city": "Thành Phố Hồ Chí Minh",
-            "district": "Quận 1",
-            "commune": "Phường Đa Kao",
-            "specific": "02 Mai Thị Lựu"
-        }, {
-            "city": "Bình Dương",
-            "district": "Thành phố Thủ Dầu Một",
-            "commune": "Phường Phú Lợi",
-            "specific": "68 Lê Thị Trung"
-        }, {
-            "city": "Đồng Nai",
-            "district": "Thành phố Biên Hòa",
-            "commune": "Phường Long Bình Tân",
-            "specific": "Đường số 9"
-        }, {
-            "city": "Khánh Hòa",
-            "district": "Thị xã Ninh Hòa",
-            "commune": "phường Ninh Hiệp",
-            "specific": "Tổ dân phố 17"
-        }]
+        u_delete = User(name='Default User',username='defaultuser',
+                        password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+                        user_role = UserRole.USER)
 
-        for l in location:
-            loca = Location(city=l['city'],
-                            district=l['district'],
-                            commune=l['commune'],
-                            specific=l['specific']
-                            )
-            db.session.add(loca)
+        u_seller = User(name='Default Seller',username='defaultseller',
+                        password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+                        user_role = UserRole.SELLER)
+
+        u_custommer = User(name='Default Customer',username='defaultcustomer',
+                        password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+                        user_role = UserRole.USER)
+
+        db.session.add_all([u,u_delete,u_seller,u_custommer])
+        c_cate = Category(name='Default Category')
+        db.session.add(c_cate)
         db.session.commit()
-        c0 = Category(name='Default Book')
+        b_book = Book(name='Default Book',category_id = 1)
+        db.session.add(b_book)
+
+        # location = [{
+        #     "city":"Thành Phố Hồ Chí Minh",
+        #     "district": "Nhà Bè",
+        #     "commune":"xã Nhơn Đức",
+        #     "specific": "Khu dân cư Nhơn Đức"
+        # }, {
+        #     "city": "Thành Phố Hồ Chí Minh",
+        #     "district": "Quận 01",
+        #     "commune": "Phường Cô Giang",
+        #     "specific": "35-37 Hồ Hảo Hớn"
+        # }, {
+        #     "city": "Thành Phố Hồ Chí Minh",
+        #     "district": "Quận 3",
+        #     "commune": "Phường Võ Thị Sáu",
+        #     "specific": "97 Võ Văn Tần"
+        # }, {
+        #     "city": "Thành Phố Hồ Chí Minh",
+        #     "district": "Quận 1",
+        #     "commune": "Phường Đa Kao",
+        #     "specific": "02 Mai Thị Lựu"
+        # }, {
+        #     "city": "Bình Dương",
+        #     "district": "Thành phố Thủ Dầu Một",
+        #     "commune": "Phường Phú Lợi",
+        #     "specific": "68 Lê Thị Trung"
+        # }, {
+        #     "city": "Đồng Nai",
+        #     "district": "Thành phố Biên Hòa",
+        #     "commune": "Phường Long Bình Tân",
+        #     "specific": "Đường số 9"
+        # }, {
+        #     "city": "Khánh Hòa",
+        #     "district": "Thị xã Ninh Hòa",
+        #     "commune": "phường Ninh Hiệp",
+        #     "specific": "Tổ dân phố 17"
+        # }]
+        #
+        # for l in location:
+        #     loca = Location(city=l['city'],
+        #                     district=l['district'],
+        #                     commune=l['commune'],
+        #                     specific=l['specific']
+        #                     )
+        #     db.session.add(loca)
+        db.session.commit()
         c1 = Category(name='Thieu nhi')
         c2 = Category(name='Giao khoa')
         c3 = Category(name='Du ky')
@@ -252,12 +268,6 @@ if __name__ == '__main__':
             "price": 120000,
             "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846492/image-GiaoKhoa_3_djbatm.jpg",
             "category_id": 3
-        }, {
-                "name": "Châu Âu vạn dặm",
-                "author": "",
-                "price": 89000,
-                "image": "https://res.cloudinary.com/dh8lb3zxg/image/upload/v1733846492/image-GiaoKhoa_3_djbatm.jpg",
-                "category_id": 3
         }]
 
         for p in data:

@@ -41,7 +41,7 @@ class BookView(AdminView):
     column_editable_list = ['name']
 
     def delete_model(self, model):
-        replacement_book = Book.query.filter(Book.id == 0).first()
+        replacement_book = Book.query.filter(Book.id == 1).first()
 
         for detail in model.received_note_details:
             detail.book_id = replacement_book.id
@@ -69,7 +69,7 @@ class UserView(AdminView):
             model.password = str(hashlib.md5(model.password.encode('utf-8')).hexdigest())
 
     def delete_model(self, model):
-        replacement_user = User.query.filter(User.id == 0).first()
+        replacement_user = User.query.filter(User.id == 2).first()
 
         for order in model.orders:
             order.user_id = replacement_user.id
@@ -114,6 +114,6 @@ admin.add_view(CategoryView(Category, db.session))
 admin.add_view(BookView(Book, db.session))
 admin.add_view(UserView(User, db.session))
 admin.add_view(RegulationView(Regulation, db.session))
-admin.add_view(StatsView(name='Thống kê'))
-admin.add_view(Stats2View(name='Thong ke'))
+admin.add_view(StatsView(name='Thống kê doanh thu'))
+admin.add_view(Stats2View(name='Thống kê tần suất'))
 admin.add_view(LogoutView(name='Đăng xuất'))

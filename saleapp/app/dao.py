@@ -15,15 +15,16 @@ def load_books(cate_id=None, kw=None, page=1, page_size = 0):
     query = Book.query
 
     if kw:
-        query = query.filter(Book.name.like(f"{kw}%"))
+        query = query.filter(Book.name.contain(kw))
 
     if cate_id:
         query = query.filter(Book.category_id == cate_id)
 
+    query = query.filter(Book.id > 1)
     if not page_size:
         page_size = app.config["PAGE_SIZE"]
     start = (page - 1) * page_size
-    query = query.slice(start, start + page_size)
+    query = query.offset(start).limit(page_size)
 
     return query.all()
 
