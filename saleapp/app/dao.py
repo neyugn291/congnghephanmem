@@ -169,6 +169,20 @@ def revenue_time(time='month', year=datetime.now().year):
                           ReceiptDetail.receipt_id.__eq__(Receipt.id)).filter(func.extract("year", Receipt.created_date).__eq__(year))\
                     .group_by(func.extract(time, Receipt.created_date)).order_by(func.extract(time, Receipt.created_date)).all()
 
+def frequency_stats():
+    return db.session.query(Book.id, Book.name, func.sum(ReceiptDetail.quantity))\
+                     .join(ReceiptDetail, ReceiptDetail.book_id == Book.id)\
+                     .group_by(Book.id).all()
+
+def frequency_time(time='month', year=datetime.now().year):
+    return db.session.query(func.extract(time, Receipt.created_date),
+                            func.sum(ReceiptDetail.quantity))\
+                    .join(ReceiptDetail, ReceiptDetail.receipt_id == Receipt.id)\
+                    .filter(func.extract("year", Receipt.created_date) == year)\
+                    .group_by(func.extract(time, Receipt.created_date))\
+                    .order_by(func.extract(time, Receipt.created_date)).all()
+
+
 
 def books_stats():
     return db.session.query(Category.id, Category.name, func.count(Book.id))\

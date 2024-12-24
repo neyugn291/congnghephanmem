@@ -105,11 +105,15 @@ class StatsView(AuthenticatedView):
     def index(self):
         return self.render('admin/stats.html', stats=dao.revenue_stats(), stats2=dao.revenue_time())
 
-
+class Stats2View(AuthenticatedView):
+    @expose('/')
+    def index(self):
+        return self.render('admin/stats2.html', stats=dao.frequency_stats(), stats2=dao.frequency_time())
 
 admin.add_view(CategoryView(Category, db.session))
 admin.add_view(BookView(Book, db.session))
 admin.add_view(UserView(User, db.session))
 admin.add_view(RegulationView(Regulation, db.session))
 admin.add_view(StatsView(name='Thống kê'))
+admin.add_view(Stats2View(name='Thong ke'))
 admin.add_view(LogoutView(name='Đăng xuất'))
