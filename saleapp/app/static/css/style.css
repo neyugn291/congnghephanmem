@@ -34,4 +34,8 @@ body {
 .btn-custom {
     background-color: var(--navy-color);
     color: white;
+
+}
+h1 {
+    color: var(--navy-color);
 }

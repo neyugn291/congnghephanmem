@@ -1,10 +1,11 @@
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, Boolean, null, DateTime, Text
 from app import db, app
 from enum import Enum as RoleEnum
 import hashlib
 from flask_login import UserMixin
+
 
 
 class UserRole(RoleEnum):
@@ -53,19 +54,6 @@ class Category(db.Model):
     def __str__(self):
         return self.name
 
-
-# class Product(db.Model):
-#     id = Column(Integer, primary_key=True, autoincrement=True)
-#     name = Column(String(50), nullable=False, unique=True)
-#     author = Column(String(255), nullable=True)
-#     price = Column(Float, default=0)
-#     image = Column(String(100), nullable=True)
-#     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
-#
-#     def __str__(self):
-#         return self.name
-
-
 class Book(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False, unique=True)
@@ -81,6 +69,8 @@ class Book(db.Model):
     comments = relationship('Comment', backref='book', lazy=True)
     def __str__(self):
         return self.name
+
+
 
 
 class ReceivedNote(db.Model):
@@ -100,11 +90,19 @@ class ReceivedNoteDetail(db.Model):
 class Order(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
-    order_day = Column(DateTime, default=datetime.now())
+    order_day = Column(DateTime, nullable=False)
     is_active = Column(Boolean, default=True)
 
     details = relationship('OrderDetail', backref='order',lazy=True)
 
+
+class Regulation(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    order_cancel_time = Column(Integer, default=48)
+    add_book_quantity = Column(Integer, default=150)
+    iventory_quantity = Column(Integer, default=300)
+    def get_order_cancel_time(self):
+        return timedelta(hours=self.order_cancel_time)
 
 class OrderDetail (db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -112,6 +110,8 @@ class OrderDetail (db.Model):
     book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
     quantity = Column(Integer, nullable=False)
     price = Column(Float, default=0)
+
+
 
 class Receipt(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -138,17 +138,12 @@ class Comment(db.Model):
     book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
 
 
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-
-
-        # default_category = Category(id = 0,name = "Default Category")
-        #default_book = Book(id = 0, name = "Default Book", category_id = 0)
-        # db.session.add(default_category)
-        #db.session.add(default_book)
-        #db.session.commit()
-        #
+        r = Regulation(order_cancel_time = 50,add_book_quantity=160,iventory_quantity=170)
+        db.session.add(r)
         u = User(name='Phan Le Nguyen', username='admin', email='abc@com', phone='0123',
                  password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
                  user_role=UserRole.ADMIN)
@@ -200,7 +195,7 @@ if __name__ == '__main__':
                             )
             db.session.add(loca)
         db.session.commit()
-
+        c0 = Category(name='Default Book')
         c1 = Category(name='Thieu nhi')
         c2 = Category(name='Giao khoa')
         c3 = Category(name='Du ky')
@@ -269,5 +264,6 @@ if __name__ == '__main__':
             prod = Book(name=p['name'], author=p['author'], price=p['price'],
                            image=p['image'], category_id=p['category_id'])
             db.session.add(prod)
+
 
         db.session.commit()

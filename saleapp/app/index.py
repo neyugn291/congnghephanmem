@@ -114,7 +114,6 @@ def add_to_cart():
             "price": price,
             "quantity": 1
         }
-
     session['cart'] = cart
 
     return jsonify(utils.stats_cart(cart))
@@ -148,6 +147,7 @@ def update_quantity():
 @app.route('/api/pay', methods=['post'])
 def pay():
     try:
+        print(session.get('cart'))
         dao.add_receipt_online(session.get('cart'))
     except:
         return jsonify({'status': 500})
@@ -273,8 +273,7 @@ def sell():
 
 @app.route('/api/receipt_sell', methods=['post'])
 def save_receipt_sell():
-    # dao.add_receipt_sell(session.get('receipts'))
-    # return jsonify({'status': 500})
+
     try:
         dao.add_receipt_sell(session.get('receipts'))
     except:
