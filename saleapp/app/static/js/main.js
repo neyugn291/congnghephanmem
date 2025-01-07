@@ -1,5 +1,5 @@
 
-function addToCart(id, name, price) {
+function addToCart(id, name, price, quantity) {
     fetch("/api/carts", {
         method: "POST",
         body: JSON.stringify({
@@ -416,7 +416,7 @@ function pay(cart) {
 }
 
 function selectPay(cart) {
-    const radios = document.querySelector('input[name="paymentMethod"]:checked')
+    const radios = document.querySelector('input[name="paymentMethod"]:checked');
 
     if(radios.value === "bankTransfer") {
         pay(cart);

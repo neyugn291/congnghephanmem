@@ -78,6 +78,11 @@ def add_receipt_online(cart):
                                receipt=r, book_id=c['id'])
             db.session.add(d)
 
+            book = db.session.query(Book).filter(Book.id == c['id']).first()
+            if book:
+                book.quantity -= c['quantity']
+                db.session.add(book)
+
         db.session.commit()
 
 def add_receipt_sell(receipts):
@@ -92,9 +97,14 @@ def add_receipt_sell(receipts):
 
         for r in receipts.values():
             print(type(r['book_id']),type(r['quantity']),type(r['id']),type(r['price']))
-            rd = ReceiptDetail(receipt=rec , book_id=r['book_id'], quantity=r['quantity'], price=r['price'])
-
+            rd = ReceiptDetail(receipt=rec , book_id=r['book_id'],
+                               quantity=r['quantity'], price=r['price'])
             db.session.add(rd)
+
+            book = db.session.query(Book).filter(Book.id == r['id']).first()
+            if book:
+                book.quantity -= r['quantity']
+                db.session.add(book)
 
     db.session.commit()
 
@@ -110,6 +120,11 @@ def add_receipt_order(receipts):
             rd = ReceiptDetail(receipt=rec, book_id=r['book_id'], quantity=r['quantity'], price=r['price'])
 
             db.session.add(rd)
+
+            book = db.session.query(Book).filter(Book.id == r['id']).first()
+            if book:
+                book.quantity -= r['quantity']
+                db.session.add(book)
 
     db.session.commit()
 
@@ -128,6 +143,10 @@ def add_receive_note(receives):
             rnd = ReceivedNoteDetail(received_note=rn ,book_id=int(r['book_id']),quantity=r['quantity'])
 
             db.session.add(rnd)
+            book = db.session.query(Book).filter(Book.id == r['book_id']).first()
+            if book:
+                book.quantity += r['quantity']
+                db.session.add(book)
 
     db.session.commit()
 
